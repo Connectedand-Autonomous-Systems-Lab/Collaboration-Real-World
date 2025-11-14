@@ -1,0 +1,188 @@
+#------------------------------------------------------------------------------
+# RGBD integration using Open3D. Color information comes from the front RGB
+# camera.
+# Press space to stop.
+#------------------------------------------------------------------------------
+
+from pynput import keyboard
+
+import numpy as np
+import open3d as o3d
+import time
+import cv2
+import sys
+sys.path.append('/home/mayooran/Documents/hl2ss/viewer')
+import hl2ss
+import hl2ss_lnm
+import hl2ss_mp
+import hl2ss_3dcv
+import hl2ss_utilities
+import threading
+
+# Settings --------------------------------------------------------------------
+
+# HoloLens address
+host = "10.196.21.62"
+
+# Calibration path (must exist but can be empty)
+calibration_path = '/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge/calibration'
+
+# Camera parameters
+pv_width = 640
+pv_height = 360
+pv_framerate = 30
+pv_exposure_mode = hl2ss.PV_ExposureMode.Manual
+pv_exposure = hl2ss.PV_ExposureValue.Max // 4
+pv_iso_speed_mode = hl2ss.PV_IsoSpeedMode.Manual
+pv_iso_speed_value = 1600
+pv_white_balance = hl2ss.PV_ColorTemperaturePreset.Manual
+
+# Integration parameters
+voxel_length = 1/100
+sdf_trunc = 0.04
+max_depth = 3.0
+
+#------------------------------------------------------------------------------
+class depth_client:
+    def __init__(self):
+        self.depth = None
+        self.intrinsics = None
+        self.undistort_map = None
+        self.scale = None
+        self.thread = threading.Thread(target=self.run_longthrow_integration)
+        self.thread.start()
+
+    def get_depth(self):
+        return self.depth
+
+    def run_longthrow_integration(self):
+        # Keyboard events ---------------------------------------------------------
+        listener = hl2ss_utilities.key_listener(keyboard.Key.space)
+        listener.open()
+
+        # Start PV Subsystem ------------------------------------------------------
+        hl2ss_lnm.start_subsystem_pv(host, hl2ss.StreamPort.PERSONAL_VIDEO)
+
+        # Wait for PV subsystem and fix exposure, iso speed, and white balance ----
+        ipc_rc = hl2ss_lnm.ipc_rc(host, hl2ss.IPCPort.REMOTE_CONFIGURATION)
+        ipc_rc.open()
+        ipc_rc.pv_wait_for_subsystem(True)
+        ipc_rc.pv_set_exposure(pv_exposure_mode, pv_exposure)
+        ipc_rc.pv_set_iso_speed(pv_iso_speed_mode, pv_iso_speed_value)
+        ipc_rc.pv_set_white_balance_preset(pv_white_balance)
+        ipc_rc.close()
+
+        # Get RM Depth Long Throw calibration -------------------------------------
+        # Calibration data will be downloaded if it's not in the calibration folder
+        # print(calibration_path)
+        calibration_lt = hl2ss_3dcv.get_calibration_rm(calibration_path, host, hl2ss.StreamPort.RM_DEPTH_LONGTHROW)
+
+        uv2xy = hl2ss_3dcv.compute_uv2xy(calibration_lt.intrinsics, hl2ss.Parameters_RM_DEPTH_LONGTHROW.WIDTH, hl2ss.Parameters_RM_DEPTH_LONGTHROW.HEIGHT)
+        xy1, scale = hl2ss_3dcv.rm_depth_compute_rays(uv2xy, calibration_lt.scale)
+
+        # Create Open3D integrator and visualizer ---------------------------------
+        # volume = o3d.pipelines.integration.ScalableTSDFVolume(voxel_length=voxel_length, sdf_trunc=sdf_trunc, color_type=o3d.pipelines.integration.TSDFVolumeColorType.RGB8)
+        # intrinsics_depth = o3d.camera.PinholeCameraIntrinsic(hl2ss.Parameters_RM_DEPTH_LONGTHROW.WIDTH, hl2ss.Parameters_RM_DEPTH_LONGTHROW.HEIGHT, calibration_lt.intrinsics[0, 0], calibration_lt.intrinsics[1, 1], calibration_lt.intrinsics[2, 0], calibration_lt.intrinsics[2, 1])
+
+        # vis = o3d.visualization.Visualizer()
+        # vis.create_window()
+        # first_pcd = True
+
+        # Start PV and RM Depth Long Throw streams --------------------------------
+        sink_pv = hl2ss_mp.stream(hl2ss_lnm.rx_pv(host, hl2ss.StreamPort.PERSONAL_VIDEO, width=pv_width, height=pv_height, framerate=pv_framerate, decoded_format='rgb24'))
+        sink_depth = hl2ss_mp.stream(hl2ss_lnm.rx_rm_depth_longthrow(host, hl2ss.StreamPort.RM_DEPTH_LONGTHROW))
+
+        sink_pv.open()
+        sink_depth.open()
+
+        last_fs = -1
+
+        # Initialize PV intrinsics and extrinsics ---------------------------------
+        pv_intrinsics = hl2ss_3dcv.pv_create_intrinsics_placeholder()
+        pv_extrinsics = np.eye(4, 4, dtype=np.float32)
+
+        self.undistort_map = calibration_lt.undistort_map
+        self.intrinsics = calibration_lt.intrinsics
+
+        # Main Loop ---------------------------------------------------------------
+        while (not listener.pressed()):
+            # vis.poll_events()
+            # vis.update_renderer()
+
+            # Get RM Depth Long Throw frame and nearest (in time) PV frame --------
+            fs_depth, data_lt = sink_depth.get_most_recent_frame()
+            if ((data_lt is None) or (not hl2ss.is_valid_pose(data_lt.pose))):
+                continue
+
+            if (fs_depth <= last_fs):
+                time.sleep(1 / hl2ss.Parameters_RM_DEPTH_LONGTHROW.FPS)
+                continue
+
+            _, data_pv = sink_pv.get_nearest(data_lt.timestamp)
+            if ((data_pv is None) or (not hl2ss.is_valid_pose(data_pv.pose))):
+                continue
+
+            last_fs = fs_depth
+
+            # Preprocess frames ---------------------------------------------------
+            depth = hl2ss_3dcv.rm_depth_undistort(data_lt.payload.depth, calibration_lt.undistort_map)
+            
+
+            self.depth = depth
+            color = data_pv.payload.image
+            depth = hl2ss_3dcv.rm_depth_normalize(depth, scale)
+
+            # Update PV intrinsics ------------------------------------------------
+            # PV intrinsics may change between frames due to autofocus
+            pv_intrinsics = hl2ss_3dcv.pv_update_intrinsics(pv_intrinsics, data_pv.payload.focal_length, data_pv.payload.principal_point)
+            color_intrinsics, color_extrinsics = hl2ss_3dcv.pv_fix_calibration(pv_intrinsics, pv_extrinsics)
+            
+            # Generate aligned RGBD image -----------------------------------------
+            lt_points         = hl2ss_3dcv.rm_depth_to_points(xy1, depth)
+            lt_to_world       = hl2ss_3dcv.camera_to_rignode(calibration_lt.extrinsics) @ hl2ss_3dcv.reference_to_world(data_lt.pose)
+            world_to_lt       = hl2ss_3dcv.world_to_reference(data_lt.pose) @ hl2ss_3dcv.rignode_to_camera(calibration_lt.extrinsics)
+            world_to_pv_image = hl2ss_3dcv.world_to_reference(data_pv.pose) @ hl2ss_3dcv.rignode_to_camera(color_extrinsics) @ hl2ss_3dcv.camera_to_image(color_intrinsics)
+            world_points      = hl2ss_3dcv.transform(lt_points, lt_to_world)
+            pv_uv             = hl2ss_3dcv.project(world_points, world_to_pv_image)
+            color             = cv2.remap(color, pv_uv[:, :, 0], pv_uv[:, :, 1], cv2.INTER_LINEAR)
+
+            mask_uv = hl2ss_3dcv.slice_to_block((pv_uv[:, :, 0] < 0) | (pv_uv[:, :, 0] >= pv_width) | (pv_uv[:, :, 1] < 0) | (pv_uv[:, :, 1] >= pv_height))
+            depth[mask_uv] = 0
+
+            # Convert to Open3D RGBD image ----------------------------------------
+            # color_image = o3d.geometry.Image(color)
+            # depth_image = o3d.geometry.Image(depth)
+            # rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color_image, depth_image, depth_scale=1, depth_trunc=max_depth, convert_rgb_to_intensity=False)
+
+            # Integrate RGBD and display point cloud ------------------------------
+            # volume.integrate(rgbd, intrinsics_depth, world_to_lt.transpose())
+            # pcd_tmp = volume.extract_point_cloud()
+
+            # if (first_pcd):
+            #     first_pcd = False
+            #     pcd = pcd_tmp
+            #     vis.add_geometry(pcd)
+            # else:
+            #     pcd.points = pcd_tmp.points
+            #     pcd.colors = pcd_tmp.colors
+            #     vis.update_geometry(pcd)
+
+        # Stop PV and RM Depth Long Throw streams ---------------------------------
+        sink_pv.close()
+        sink_depth.close()
+        
+        # Stop PV subsystem -------------------------------------------------------
+        hl2ss_lnm.stop_subsystem_pv(host, hl2ss.StreamPort.PERSONAL_VIDEO)
+
+        # Stop keyboard events ----------------------------------------------------
+        listener.close()
+
+        # Show final point cloud --------------------------------------------------
+        # vis.run()
+
+
+if __name__ == '__main__':
+    client = depth_client()
+    while True:
+        print(client.get_depth())
+        time.sleep(1)
