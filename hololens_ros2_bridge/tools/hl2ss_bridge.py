@@ -7,7 +7,7 @@ import hl2ss_utilities
 import hl2ss_3dcv
 # import open3d as o3d
 import threading
-# import time 
+import time 
 import numpy as np
 import tools.sm_utilities as sm_utilities
 # import cv2
@@ -28,16 +28,19 @@ class si_client:
         listener.open()
         si_client = hl2ss_lnm.rx_si(host, hl2ss.StreamPort.SPATIAL_INPUT)
         si_client.open()
+        self.unpacked_si_object = hl2ss.decode_si()
 
         while not listener.pressed():
             data = si_client.get_next_packet()            
             self.payload = data.payload
+            # head_pose, self.eye_ray, self.hand_left, self.hand_right, _,_,_,_ = self.unpacked_si_object.decode(self.payload)
 
         si_client.close()
         listener.close()
 
     def end_thread(self):
         self.thread.join()
+        print("SI client thread ended...................................")
     
     def get_position(self):
         if self.payload == None:
@@ -81,12 +84,37 @@ class si_client:
         return rot4
 
     def get_hand(self):
-        right = self.payload.hand_right
-        left = self.payload.hand_left
-        return {"right":right, "left":left}
+        if self.payload == None:
+            return str(None)
+        
+        if self.payload.hand_right_valid:
+            hand_right = {
+                "position": self.payload.hand_right.position,
+                "orientation": self.payload.hand_right.orientation,
+                "radius": self.payload.hand_right.radius,
+                "accuracy": self.payload.hand_right.accuracy,
+            }
+        else:
+            hand_right = None
+
+        if self.payload.hand_left_valid:
+            hand_left = {
+                "position": self.payload.hand_left.position,
+                "orientation": self.payload.hand_left.orientation,
+                "radius": self.payload.hand_left.radius,
+                "accuracy": self.payload.hand_left.accuracy,
+            }
+        else:
+            hand_left = None    
+            
+        json = {"right": hand_right, "left": hand_left}
+        return str(json)
 
     def get_eye(self):
-        return self.payload.eye_ray
+        if self.payload == None:
+            return str(None)
+        json = {"origin": self.payload.eye_ray.origin, "direction": self.payload.eye_ray.direction}
+        return str(json)
 
 
 class sm_client:
@@ -201,6 +229,7 @@ class pv_client:
         self.thread = threading.Thread(target=self.run_pv_client)
         self.thread.start()
         self.frame = None
+        self.receive_time_stamp = None
 
     def run_pv_client(self):
         host = host_address
@@ -213,6 +242,7 @@ class pv_client:
 
         while not listener.pressed():
             data = pv_client.get_next_packet()
+            self.receive_time_stamp = data.timestamp
             self.frame = data.payload.image
 
         pv_client.close()
@@ -220,10 +250,22 @@ class pv_client:
 
     def end_thread(self):
         self.thread.join()
+        print("PV client thread ended...................................")
     
     def get_frame(self):
-        return self.frame
+        return self.frame, self.receive_time_stamp
 
+class time_client:
+    def __init__(self):
+        pass
+
+    def get_time(self):
+        host = host_address
+        client = hl2ss_lnm.ipc_rc(host, hl2ss.IPCPort.REMOTE_CONFIGURATION)
+        client.open()
+        utc_offset = client.ts_get_utc_offset()
+        client.close()
+        return utc_offset
 
 if __name__ == "__main__":
     pass
