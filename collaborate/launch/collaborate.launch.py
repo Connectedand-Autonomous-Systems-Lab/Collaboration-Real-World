@@ -46,16 +46,8 @@ def generate_launch_description():
     return LaunchDescription([
 
         rviz_node,
-        tf_relay,
-        # hololens_bridge_launch,
-        # turtlebot4_launch,
-
-        GroupAction([
-            PushRosNamespace('tb_0/'),
-            # SetRemap(src='/tf', dst='/tb/tf'),
-            # SetRemap(src='/tf_static', dst='/tb/tf_static'),
-            turtlebot4_launch
-        ]),
+        hololens_bridge_launch,
+        turtlebot4_launch,
         # GroupAction([
         #     PushRosNamespace('human/'),
         #     hololens_bridge_launch

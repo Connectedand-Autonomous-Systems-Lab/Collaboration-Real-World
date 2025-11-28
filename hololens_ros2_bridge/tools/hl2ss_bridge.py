@@ -19,28 +19,30 @@ class si_client:
         self.payload = None
         self.previous_head_position = None
         self.previous_head_orientation = None
-        self.thread = threading.Thread(target=self.run_si_client)
+
+        host = host_address
+        self.si_client = hl2ss_lnm.rx_si(host, hl2ss.StreamPort.SPATIAL_INPUT)
+        self.si_client.open()
+        self.done = False
+        # self.unpacked_si_object = hl2ss.decode_si()
+
+        self.thread = threading.Thread(target=self.run_si_client, daemon=True)
         self.thread.start()
 
     def run_si_client(self):
-        host = host_address
-        listener = hl2ss_utilities.key_listener(keyboard.Key.esc)
-        listener.open()
-        si_client = hl2ss_lnm.rx_si(host, hl2ss.StreamPort.SPATIAL_INPUT)
-        si_client.open()
-        self.unpacked_si_object = hl2ss.decode_si()
+        
 
-        while not listener.pressed():
-            data = si_client.get_next_packet()            
+        while not self.done:
+            data = self.si_client.get_next_packet()            
             self.payload = data.payload
             # head_pose, self.eye_ray, self.hand_left, self.hand_right, _,_,_,_ = self.unpacked_si_object.decode(self.payload)
 
-        si_client.close()
-        listener.close()
+        self.si_client.close()
 
     def end_thread(self):
+        self.done = True
         self.thread.join()
-        print("SI client thread ended...................................")
+        print("SI client thread ended...................................from the python side")
     
     def get_position(self):
         if self.payload == None:
@@ -116,7 +118,6 @@ class si_client:
         json = {"origin": self.payload.eye_ray.origin, "direction": self.payload.eye_ray.direction}
         return str(json)
 
-
 class sm_client:
     def __init__(self):
         self.pointcloud = None
@@ -164,7 +165,7 @@ class depth_client:
         self.calibration_thread = threading.Thread(target=self.run_depth_calibration_client)
         self.calibration_thread.start()
         self.calibration_thread.join()
-        self.thread = threading.Thread(target=self.run_depth_client)
+        self.thread = threading.Thread(target=self.run_depth_client, daemon=True)
         self.thread.start()
 
     def run_depth_client(self):
@@ -226,7 +227,7 @@ class depth_client:
 
 class pv_client:
     def __init__(self):
-        self.thread = threading.Thread(target=self.run_pv_client)
+        self.thread = threading.Thread(target=self.run_pv_client, daemon=True)
         self.thread.start()
         self.frame = None
         self.receive_time_stamp = None
@@ -250,7 +251,7 @@ class pv_client:
 
     def end_thread(self):
         self.thread.join()
-        print("PV client thread ended...................................")
+        print("PV client thread ended...................................from the python side")
     
     def get_frame(self):
         return self.frame, self.receive_time_stamp

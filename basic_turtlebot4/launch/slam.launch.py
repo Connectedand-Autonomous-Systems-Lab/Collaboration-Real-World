@@ -6,6 +6,9 @@ from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 import os
+from launch_ros.actions import Node, PushRosNamespace, SetRemap
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription, GroupAction
 
 def generate_launch_description():
     slam_launch = IncludeLaunchDescription(
@@ -22,10 +25,18 @@ def generate_launch_description():
         # }.items()
     )
 
+    # tf_relay = Node(
+    #     package="tf_relay",
+    #     executable="relay",
+    #     name="relay"        
+    # )
+
     tf_relay = Node(
-        package="tf_relay",
-        executable="relay",
-        name="relay"        
+        package='tf_relay',
+        executable='relay',
+        name='tf_relay_tb',
+        arguments=['tb', '1'],  # same as: ros2 run tf_relay relay 'tb' 1
+        output='screen',
     )
 
     nav2 = IncludeLaunchDescription(
@@ -57,9 +68,17 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        slam_launch,
-        nav2,
-        # rviz2,
-        # tf_relay
+        GroupAction([
+            PushRosNamespace('tb_0/'),
+            # SetRemap(src='/tf', dst='/tb/tf'),
+            # SetRemap(src='/tf_static', dst='/tb/tf_static'),
+            slam_launch,
+            # nav2
+        ]),
+
+        # slam_launch,
+        # nav2,
+        rviz2,
+        tf_relay
         # depth_image_to_laserscan_node
     ])

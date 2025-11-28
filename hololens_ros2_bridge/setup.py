@@ -32,6 +32,8 @@ setup(
             'pcd_logger = hololens_ros2_bridge.pointcloud_logger:main',
             'depth_publisher = hololens_ros2_bridge.depth_publisher:main',
             'pv_publisher = hololens_ros2_bridge.pv_publisher:main',
+            'thread_publisher = hololens_ros2_bridge.thread_publisher:main',
+            'image_publisher = hololens_ros2_bridge.image_publisher:main',
         ],
     },
 )

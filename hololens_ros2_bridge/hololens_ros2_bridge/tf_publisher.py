@@ -14,46 +14,55 @@ class TFPublisher(Node):
     def __init__(self):
         super().__init__('hololens_tf_broadcaster')
         self.br = TransformBroadcaster(self)
-        self.timer = self.create_timer(0.1, self.broadcast_tf)  # 10 Hz
+        
         self.head_position_subscriber_ = self.create_subscription(String, 'hololens/si/head_position', self.position_callback ,10)
         self.head_orientation_subscriber_ = self.create_subscription(String, 'hololens/si/head_orientation', self.orientation_callback ,10)
         self.head_position = None
         self.head_orientation = None
+        self.previous_t = None
+        self.timer = self.create_timer(0.1, self.broadcast_tf)  # 10 Hz
 
     def broadcast_tf(self):
-        t = TransformStamped()
+        try:
+            t = TransformStamped()
 
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'odom'
-        t.child_frame_id = 'hololens'
+            t.header.stamp = self.get_clock().now().to_msg()
+            t.header.frame_id = 'odom'
+            t.child_frame_id = 'hololens'
 
-        position = self.head_position
-        rot4 = self.head_orientation
+            position = self.head_position
+            rot4 = self.head_orientation
 
-        if position == None or rot4 == None:
-            if position == None:
-                self.get_logger().info(f"null position: {self.head_position}", throttle_duration_sec=1)
-            else: self.get_logger().info(f"null orientation: {self.head_orientation}", throttle_duration_sec=1)
-            # self.get_logger().warn("No SI data yet")
-            return
-    
-        t.transform.translation.x = float(position[2])
-        t.transform.translation.y = float(position[0])
-        t.transform.translation.z = float(position[1])  # Height of Hololens from ground (example)
-
+            if position == None or rot4 == None:
+                if position == None:
+                    self.get_logger().warn(f"null position: {self.head_position}", throttle_duration_sec=1)
+                else: self.get_logger().warn(f"null orientation: {self.head_orientation}", throttle_duration_sec=1)
+                # self.get_logger().warn("No SI data yet")
+                return
         
-        qx, qy, qz, qw = quaternion_from_matrix(rot4)
-        t.transform.rotation.x = qz
-        t.transform.rotation.y = qx
-        t.transform.rotation.z = qy
-        t.transform.rotation.w = qw
+            t.transform.translation.x = float(position[2])
+            t.transform.translation.y = float(position[0])
+            t.transform.translation.z = float(position[1])  # Height of Hololens from ground (example)
 
-        self.br.sendTransform(t)
-        self.get_logger().debug("TF published!")
+            
+            qx, qy, qz, qw = quaternion_from_matrix(rot4)
+            t.transform.rotation.x = qz
+            t.transform.rotation.y = qx
+            t.transform.rotation.z = qy
+            t.transform.rotation.w = qw
+
+            if self.previous_t == t:
+                self.get_logger().debug("TF unchanged, not publishing", throttle_duration_sec=1)
+            self.previous_t = t 
+
+            self.br.sendTransform(t)
+            # self.get_logger().info("TF published!", throttle_duration_sec=1)
+        except Exception as e:
+            self.get_logger().debug(f"TF publish failed: {e}")
     
     def position_callback(self, msg):
         self.head_position = eval(msg.data)
-        # self.get_logger().info("got position")
+        # self.get_logger().info(f"got position: {self.head_position}")
 
     def orientation_callback(self, msg):
         # print(msg.data)
@@ -78,7 +87,7 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     node.destroy_node()
-    rclpy.shutdown()
+    # rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

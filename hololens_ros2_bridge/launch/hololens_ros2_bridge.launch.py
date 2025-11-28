@@ -94,11 +94,11 @@ def generate_launch_description():
         executable='depthimage_to_laserscan_node',
         name='depth_image_to_laserscan',
         remappings=[
-            ('depth', 'oakd/stereo/image_raw'),
-            ('depth_camera_info', 'oakd/stereo/camera_info'),
+            ('depth', 'oak/stereo/depth'),
+            ('depth_camera_info', 'oak/stereo/camera_info'),
         ],  
         parameters=[{
-            'output_frame': 'stereo_d_base_frame',
+            'output_frame': 'oak_rgb_camera_optical_frame',
         }],
         )
 
@@ -108,7 +108,7 @@ def generate_launch_description():
             name='static_tf_pub',
             output='screen',
             # Arguments (positional): x y z qx qy qz qw parent child
-            arguments=['0', '0', '0', '0', '0', '0', '1', 'hololens', 'oak-d-base-frame'],
+            arguments=['0', '0', '0', '0', '0', '0', '1', 'hololens', 'oak_rgb_camera_optical_frame'],
         )
     
     pv_publisher_node = Node(
@@ -121,14 +121,19 @@ def generate_launch_description():
     return LaunchDescription([
         tf_publisher_node,
         si_publisher_node,
+        # pv_publisher_node,
         # sm_publisher_node,
         # depth_publisher_node,
+
         # depth_image_to_laserscan_node,
         # pointcloud_publisher_node,
         # stereo_to_laserscan_node,
-        rviz_node,
         # pointcloud_to_laserscan_node,
+
+        rviz_node,
+        
         # slam_toolbox,
+
         # hololens_to_oakd_tf,
-        # pv_publisher_node,
+        
     ])

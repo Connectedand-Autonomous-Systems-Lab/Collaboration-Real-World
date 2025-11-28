@@ -39,7 +39,7 @@ def generate_launch_description():
         executable='depthimage_to_laserscan_node',
         name='depth_image_to_laserscan',
         remappings=[
-            ('depth', 'oak/stereo/image_raw'),
+            ('depth', 'oak/stereo/depth'),
             ('depth_camera_info', 'oak/stereo/camera_info'),
         ],  
         parameters=[{
@@ -50,7 +50,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         rviz_node,
-        oakd_publisher_node,
+        # oakd_publisher_node,
         depth_image_to_laserscan_node,
         # slam_toolbox,
     ])
