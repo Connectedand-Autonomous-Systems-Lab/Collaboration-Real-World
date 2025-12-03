@@ -7,6 +7,9 @@ import socket
 import json
 import threading
 
+# This needs old hlss repo with eye distance. 
+# This needs a UDP server running on localhost:9999 that receives SI packets from Hololens and forwards them.
+
 class SiPublisher(Node):
     def __init__(self):
         super().__init__('si_publisher')
@@ -27,25 +30,35 @@ class SiPublisher(Node):
         self.sock.setblocking(False)
         self.get_logger().info(f"SI Publisher listening on {HOST}:{PORT}")
 
-        self.create_timer(0.1, self.get_payload)
-        self.create_timer(0.1, self.publish_head_position)
-        self.create_timer(0.1, self.publish_head_orientation)
-        # self.create_timer(0.05, self.publish_eye)
-        # self.create_timer(0.05, self.publish_hand)
+        # Control flag for thread
+        self._running = True
 
-    def get_payload(self):
-        try:
-            data, _ = self.sock.recvfrom(65535)
-        except BlockingIOError:
-            return
-        except OSError as exc:
-            self.get_logger().error(f"Socket receive failed: {exc}", throttle_duration_sec=1)
-            return
+        # Start background thread for receiving packets
+        self.recv_thread = threading.Thread(target=self.recv_loop, daemon=True)
+        self.recv_thread.start()
 
-        try:
-            self.payload = json.loads(data.decode("utf-8"))
-        except json.JSONDecodeError as exc:
-            self.get_logger().warn(f"Invalid SI payload: {exc}", throttle_duration_sec=1)
+    def recv_loop(self):
+        """
+        Blocking loop that waits for UDP packets.
+        Runs in a background thread so it doesn't block rclpy.spin().
+        """
+        while self._running:
+            try:
+                data, addr = self.sock.recvfrom(65535)
+                self.payload = json.loads(data.decode('utf-8'))
+                self.handle_packet()
+
+            # except OSError as e:
+            #     # This happens when socket is closed while blocking on recvfrom
+            #     self.get_logger().info(f"Socket closed, exiting recv_loop {e}")
+            #     continue
+            except Exception as e:
+                # self.get_logger().error(f'Error in recv_loop: {e}')
+                continue
+
+    def handle_packet(self):
+            self.publish_head_position()
+            self.publish_head_orientation()
             
     def publish_head_position(self):
         try:

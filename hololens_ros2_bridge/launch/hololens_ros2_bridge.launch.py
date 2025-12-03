@@ -21,6 +21,13 @@ def generate_launch_description():
         output='screen'
     )
 
+    si_publisher_new_node = Node(
+        package='hololens_ros2_bridge',
+        executable='si_publisher_new',
+        name='si_publisher_new',
+        output='screen'
+    )
+
     sm_publisher_node = Node(
         package='hololens_ros2_bridge',
         executable='sm_publisher',
@@ -108,7 +115,7 @@ def generate_launch_description():
             name='static_tf_pub',
             output='screen',
             # Arguments (positional): x y z qx qy qz qw parent child
-            arguments=['0', '0', '0', '0', '0', '0', '1', 'hololens', 'oak_rgb_camera_optical_frame'],
+            arguments=['0', '0', '0', '0', '0', '0', '1', 'hololens', 'oakd_frame'],
         )
     
     pv_publisher_node = Node(
@@ -120,15 +127,16 @@ def generate_launch_description():
 
     return LaunchDescription([
         tf_publisher_node,
-        si_publisher_node,
+        # si_publisher_node,
+        si_publisher_new_node,
         # pv_publisher_node,
-        # sm_publisher_node,
+        sm_publisher_node,
         # depth_publisher_node,
 
         # depth_image_to_laserscan_node,
-        # pointcloud_publisher_node,
+        pointcloud_publisher_node,
         # stereo_to_laserscan_node,
-        # pointcloud_to_laserscan_node,
+        pointcloud_to_laserscan_node,
 
         rviz_node,
         

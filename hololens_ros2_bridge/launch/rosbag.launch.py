@@ -70,7 +70,7 @@ def generate_launch_description():
     # )
 
     human_bag = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge/rosbag/depth_images'],
+        cmd=['ros2', 'bag', 'play', '/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge/rosbag/oakd_on_hl/full_round_gitc4/rosbag2_2025_11_30-16_59_25'],
         output='screen'
     )
     
@@ -106,9 +106,9 @@ def generate_launch_description():
         # sm_publisher_node,
         # pointcloud_publisher_node,
         # depth_publisher_node,
-        depth_image_to_laserscan_node,
+        # depth_image_to_laserscan_node,
         rviz_node,
         # pointcloud_to_laserscan_node,
-        # slam_toolbox,
+        slam_toolbox,
         human_bag
     ])

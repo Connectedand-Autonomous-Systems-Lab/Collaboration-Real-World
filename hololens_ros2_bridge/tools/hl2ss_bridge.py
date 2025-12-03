@@ -12,7 +12,10 @@ import numpy as np
 import tools.sm_utilities as sm_utilities
 # import cv2
 
-host_address = "10.0.0.13"
+host_address = "192.168.1.10"
+
+# These clients works with new hl2ss repo. Run the new hl2ss app on hololens.
+# These clients publish data without an external UDP server.
 
 class si_client:
     def __init__(self):
@@ -28,6 +31,7 @@ class si_client:
 
         self.thread = threading.Thread(target=self.run_si_client, daemon=True)
         self.thread.start()
+        print("SI client initialized...................................from the python side")
 
     def run_si_client(self):
         
@@ -131,9 +135,12 @@ class sm_client:
         self.tif = hl2ss.SM_TriangleIndexFormat.R32Uint
         self.vnf = hl2ss.SM_VertexNormalFormat.R32G32B32A32Float
 
+        print("Initializing SM client... - python side")
         self.sm_client = hl2ss_lnm.ipc_sm(host, hl2ss.IPCPort.SPATIAL_MAPPING)
         self.sm_client.open()
         self.frame = 0
+        print("SM client initialized")
+
 
     def get_pcd(self, center):
 

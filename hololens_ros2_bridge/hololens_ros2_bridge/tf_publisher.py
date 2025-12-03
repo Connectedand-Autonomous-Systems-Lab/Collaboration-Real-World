@@ -61,7 +61,10 @@ class TFPublisher(Node):
             self.get_logger().debug(f"TF publish failed: {e}")
     
     def position_callback(self, msg):
-        self.head_position = eval(msg.data)
+        try:
+            self.head_position = eval(msg.data)
+        except Exception as e:
+            self.get_logger().warn(f"Position callback failed: {e}")
         # self.get_logger().info(f"got position: {self.head_position}")
 
     def orientation_callback(self, msg):
