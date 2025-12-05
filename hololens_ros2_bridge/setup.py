@@ -35,6 +35,7 @@ setup(
             'thread_publisher = hololens_ros2_bridge.thread_publisher:main',
             'image_publisher = hololens_ros2_bridge.image_publisher:main',
             'si_publisher_new = hololens_ros2_bridge.si_publisher_new:main',
+            'keyboard_publisher = hololens_ros2_bridge.keyboard_publisher:main',
         ],
     },
 )

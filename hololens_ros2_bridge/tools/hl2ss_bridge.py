@@ -144,7 +144,7 @@ class sm_client:
 
     def get_pcd(self, center):
 
-            box_dim = 1.0
+            box_dim = 2.0
             extents = [box_dim, box_dim, box_dim]
 
             volumes = hl2ss.sm_bounding_volume()

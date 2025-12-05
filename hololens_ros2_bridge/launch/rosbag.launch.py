@@ -70,7 +70,7 @@ def generate_launch_description():
     # )
 
     human_bag = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge/rosbag/oakd_on_hl/full_round_gitc4/rosbag2_2025_11_30-16_59_25'],
+        cmd=['ros2', 'bag', 'play', '/media/2TB/Collaborative_user_study_real_world/Mayooran/complete/rosbag2_2025_12_04-17_59_51'],
         output='screen'
     )
     

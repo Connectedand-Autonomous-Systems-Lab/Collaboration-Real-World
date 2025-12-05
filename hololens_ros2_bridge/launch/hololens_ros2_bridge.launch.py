@@ -127,21 +127,21 @@ def generate_launch_description():
 
     return LaunchDescription([
         tf_publisher_node,
-        # si_publisher_node,
-        si_publisher_new_node,
+        si_publisher_node,
+        # si_publisher_new_node,
         # pv_publisher_node,
-        sm_publisher_node,
+        # sm_publisher_node,
         # depth_publisher_node,
 
         # depth_image_to_laserscan_node,
-        pointcloud_publisher_node,
+        # pointcloud_publisher_node,
         # stereo_to_laserscan_node,
-        pointcloud_to_laserscan_node,
+        # pointcloud_to_laserscan_node,
 
         rviz_node,
         
         # slam_toolbox,
 
-        # hololens_to_oakd_tf,
+        hololens_to_oakd_tf,
         
     ])

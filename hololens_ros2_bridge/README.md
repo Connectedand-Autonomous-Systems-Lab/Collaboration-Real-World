@@ -6,7 +6,9 @@ This has following nodes.
 
     1. tf publisher for odom and hololens from the IMU of hololens
 
-    2. si publisher head position and orientation
+    2. si publisher head position and orientation using the old hl2ss scripts with the eye distance. This needs a UDP server running on a local port which receives from hl2ss app. Refer write_max_stream_udp_si.py from project_hl2ss repo.
+
+       si_publisher_new uses the new hl2ss repo and gets the streams from a thread it creates.
 
     3. sm publisher - captured from spatial mapping as just string data
 

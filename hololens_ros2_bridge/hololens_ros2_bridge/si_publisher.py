@@ -15,8 +15,8 @@ class SiPublisher(Node):
         super().__init__('si_publisher')
         self.head_pos_publisher_ = self.create_publisher(String, 'hololens/si/head_position', 10)
         self.head_orientation_publisher_ = self.create_publisher(String, 'hololens/si/head_orientation', 10)
-        # self.eye_publisher_ = self.create_publisher(String, 'hololens/si/eye',10)
-        # self.hand_publisher_ = self.create_publisher(String, 'hololens/si/hand',10)
+        self.eye_publisher_ = self.create_publisher(String, 'hololens/si/eye',10)
+        self.hand_publisher_ = self.create_publisher(String, 'hololens/si/hand',10)
 
         self.done = False
         self.payload = {}

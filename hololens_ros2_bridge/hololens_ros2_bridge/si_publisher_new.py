@@ -7,6 +7,8 @@ import time
 from tools.hl2ss_bridge import si_client, time_client
 
 # This works with the new hl2ss repo. Use the new hl2ss app on hololens. 
+# ( The one appears second in the full app list in HL2)
+# ( HL1 does not have this app)
 # This publishes head position and orientation (rot4 matrix) to ROS2 topics without and external UDP server.
 
 class SiPublisher(Node):

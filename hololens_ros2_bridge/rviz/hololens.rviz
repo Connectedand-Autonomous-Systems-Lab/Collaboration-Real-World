@@ -25,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: ""
 Visualization Manager:
   Class: ""
   Displays:
@@ -54,6 +54,8 @@ Visualization Manager:
         All Enabled: false
         hololens:
           Value: true
+        oakd_frame:
+          Value: true
         odom:
           Value: true
       Marker Scale: 1
@@ -64,7 +66,8 @@ Visualization Manager:
       Tree:
         odom:
           hololens:
-            {}
+            oakd_frame:
+              {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -76,7 +79,7 @@ Visualization Manager:
       Axis: Z
       Channel Name: intensity
       Class: rviz_default_plugins/LaserScan
-      Color: 224; 27; 36
+      Color: 38; 162; 105
       Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
@@ -216,25 +219,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 7.56063985824585
+      Distance: 11.648890495300293
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.8233721852302551
-        Y: -0.24739304184913635
-        Z: 0.3692648112773895
+        X: -0.29514166712760925
+        Y: 0.07811988145112991
+        Z: 0.36873823404312134
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.27479660511016846
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.8153648376464844
+      Yaw: 6.278553485870361
     Saved: ~
 Window Geometry:
   Displays:
