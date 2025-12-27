@@ -10,8 +10,7 @@ To simulate the Concord, redirect to this repository
 The following is a speeded instance of an user searching and acknowledging of QR codes around GITC 4th floor, NJIT.
 
 <video width="640" height="360" controls>
-  <source src="readme_files/oakd_slam_on_gitc4_timelapse.mp4" 
-  type="video/mp4">
+  <source src="readme_files/oakd_slam_on_gitc4_timelapse.mp4" type="video/mp4">
 </video>
 
 <p align="center">
