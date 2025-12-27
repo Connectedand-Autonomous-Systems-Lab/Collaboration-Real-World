@@ -13,10 +13,6 @@ The following is a speeded instance of an user searching and acknowledging of QR
   <source src="readme_files/oakd_slam_on_gitc4_timelapse.mp4" type="video/mp4">
 </video>
 
-<p align="center">
-  <img src="readme_files/Human_headset4.jpeg" width="30%" />
-</p>
-
 
 ## Requirements
 
