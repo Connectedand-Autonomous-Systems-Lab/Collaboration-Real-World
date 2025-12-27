@@ -18,7 +18,7 @@ def generate_launch_description():
                 'launch',
                 'slam.launch.py'
             ])
-        ])
+        ]),
         # launch_arguments={
         #     'use_sim_time': 'true',
         #     'slam_params_file': os.path.join(get_package_share_directory('basic_turtlebot4'), 'config', 'tb.yaml'),
@@ -49,36 +49,21 @@ def generate_launch_description():
         ])
     )
 
-    depth_image_to_laserscan_node = Node(
-        package='depthimage_to_laserscan',
-        executable='depthimage_to_laserscan_node',
-        name='depth_image_to_laserscan',
-        remappings=[
-            ('depth', 'hololens/depth'),
-            ('depth_camera_info', 'hololens/depth_cameraInfo'),
-        ],  
-        parameters=[{
-            'output_frame': 'hololens',
-        }],
-        )
-
     rviz2 = ExecuteProcess(
         cmd=['rviz2', '-d','/home/mayooran/Documents/hololens_ros2_bridge/src/basic_turtlebot4/rviz2/basic_setup.rviz'],
         output='screen'
     )
 
     return LaunchDescription([
-        GroupAction([
-            PushRosNamespace('tb_0/'),
-            # SetRemap(src='/tf', dst='/tb/tf'),
-            # SetRemap(src='/tf_static', dst='/tb/tf_static'),
-            slam_launch,
-            # nav2
-        ]),
+        # GroupAction([
+        #     PushRosNamespace('tb_0/'),
+        #     slam_launch,
+        #     nav2
+        # ]),
 
-        # slam_launch,
-        # nav2,
+        slam_launch,
+        nav2,
         rviz2,
-        tf_relay
+        # tf_relay
         # depth_image_to_laserscan_node
     ])
