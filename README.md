@@ -29,7 +29,9 @@ https://github.com/user-attachments/assets/b5a5726d-e83c-4d5f-a6ab-dbf787ced90e
 
 (Under development) This runs an instance of Concord (Human-in-the-loop exploration) at GITC 4th floor, NJIT. Both human and turtlebot4 data are stored in ros2 bags when a Human-in-the-loop exploration is conducted.
 
+```bash
 ros2 launch collaborate run_demo.launch.py
+``` 
 
 ### Run turtlebot4 asynchronously
 
@@ -37,15 +39,21 @@ This runs the turtlebot4 with already saved realworld human data. To lookup what
 
 The following starts the collected human data on GITC 4th floor, NJIT.
 
+```bash
 ros2 launch hololens_ros2_bridge collaborate_async.launch.py
+```
 
 The following starts the turtlebot4 with navigation. To learn how to get started with Turtlebot4, refer the official documentation. [Get Started with Turtlebot4 Standard](https://turtlebot.github.io/turtlebot4-user-manual/setup/basic.html)
 
+```bash
 ros2 launch basic_turtlebot4 slam.launch.py
+``` 
 
 The following starts the Concord (Human-in-the-loop exploration for turtlebot)
 
+```bash
 ros2 launch collaborate concord.launch.py
+```
 
 ## Run Turtlebot4 and Human synchronousely (Documentation under development)
 
