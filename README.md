@@ -4,6 +4,7 @@ To simulate the Concord, redirect to this repository
 
 [Click here to navigate to Simulation repository](https://github.com/Connected-and-Autonomous-Systems-Lab/HumanRobotSim.git)
 
+<img src="readme_files/collaborative_search_10min_16x_masked.gif" width="30%" />
 
 # Run real world experiment
 
