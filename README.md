@@ -1,18 +1,19 @@
-# Simulation
-
-To simulate the Concord, redirect to this repository
-
-[Click here to navigate to Simulation repository](https://github.com/Connected-and-Autonomous-Systems-Lab/HumanRobotSim.git)
-
-<img src="readme_files/collaborative_search_10min_16x_masked.gif" width="30%" />
+> # SIMULATION
+> To simulate the Concord, redirect to this repository
+> [Click here to navigate to Simulation repository](https://github.com/Connected-and-Autonomous-Systems-Lab/HumanRobotSim.git)
+> <img src="readme_files/collaborative_search_10min_16x_masked.gif" width="80%" />
 
 # Run real world experiment
 
-The following is a speeded instance of an user searching and acknowledging of QR codes around GITC 4th floor, NJIT.
-
-https://github.com/user-attachments/assets/b5a5726d-e83c-4d5f-a6ab-dbf787ced90e
+According to the user study we conducted, we collected the perceptions of the users while they search and acknowledge QR codes around GITC 4th floor, NJIT.
 
 <img src="readme_files/Human_headset4.jpeg" width="30%" />
+
+The following is a speeded instance of the corresponding scan and map generated using a OAKD stereo camera mounted on the headset. This is visualised in Rviz, a standard tool in ROS2.
+
+<img src="readme_files/oakd_slam_on_gitc4_timelapse.gif" width="80%" />
+
+
 
 ## Requirements
 
@@ -36,7 +37,7 @@ ros2 launch collaborate run_demo.launch.py
 
 ### Run turtlebot4 asynchronously
 
-This runs the turtlebot4 with already saved realworld human data. To lookup what the human data(ros2 bag) contains, refer the dataset documentation.
+This runs the turtlebot4 with already saved realworld human data. To lookup what the human data(ros2 bag) contains, refer [Dataset Documentation](readme_files/dataset_README.md)
 
 The following starts the collected human data on GITC 4th floor, NJIT.
 
