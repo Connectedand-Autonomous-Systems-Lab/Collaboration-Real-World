@@ -1,0 +1,4 @@
+# Byte-compiled / optimized / DLL files
+*.pyc
+*.pth
+*.db3

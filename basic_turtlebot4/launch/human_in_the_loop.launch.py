@@ -230,7 +230,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         GroupAction([
-            PushRosNamespace('tb_0/'),
+            PushRosNamespace('robot_1/'),
             # SetRemap(src='/tf', dst='/tb/tf'),
             # SetRemap(src='/tf_static', dst='/tb/tf_static'),
             slam_launch,
