@@ -77,6 +77,8 @@ Instead of using the userstudy data, if you want to have your own human headset,
 
 ### Headset
 
+Every document related to Hololens2 can be found [here](hololens_ros2_bridge/README.md)
+
 Follow these commands to run on the RaspberryPi 5 mounted with OAKD stereo camera.
 Clone the following workspace to the RPi5 and build it. 
 
@@ -91,7 +93,7 @@ Terminal 2 (RaspberryPi 5 connected with OAKD stereo camera)
 ```bash
 cd ~/Documents/dai_ws
 source install/setup.bash
-export ROS_DISCOVERY_SERVER=";127.0.0.1:11888"
+export ROS_DISCOVERY_SERVER=";127.0.0.1:11888"  # be careful about the discovery server id. if it is 0; ROS_DISCOVERY_SERVER="<ip-address of TB4>:<port>". If it is 1;  ROS_DISCOVERY_SERVER=";<ip-address of TB4>:<port>" likewise
 ros2 launch depthai_ros_driver oak_stereo_minimal.launch.py  # This script is written based on the official depthai_ros_driver repo in a way only the necessary topics are querried from the OAKD camera.
 ```
 
@@ -108,7 +110,7 @@ Then from the middleware machine run the following
 
 Terminal 1 (Middleware machine)
 ```bash
-fastdds discovery -i 1 --udp-address <ip-address_of_middleware_machine> --udp-port 11811
+fastdds discovery -i 0 --udp-address <ip-address_of_middleware_machine> --udp-port 11811
 ```
 
 Terminal 2 (Middleware machine)
@@ -122,3 +124,114 @@ You should see the /scan topic extracted from the stereo camera in Terminal 2. R
 ```bash
 ros2 daemon stop; ros2 daemon start
 ```
+
+
+### Running Turtlebot4
+
+Use the official guide to setup the TB4 to host and run in a discovery server [here](https://turtlebot.github.io/turtlebot4-user-manual/setup/discovery_server.html). This is to decrease the packet traffic. 
+
+(Experimental point->)But for the Middleware machine, do not export the discovery server settings to bashrc since it will applied to all the terminals.
+
+Terminal 1 (Middleware machine)
+```bash
+export ROS_DISCOVERY_SERVER="<ip-address of TB4>:<port>"  # be careful about the discovery server id. if it is 0; ROS_DISCOVERY_SERVER="<ip-address of TB4>:<port>". If it is 1;  ROS_DISCOVERY_SERVER=";<ip-address of TB4>:<port>" likewise
+cd hololens_ros2_bridge
+source install/setup.bash
+ros2 launch basic_turtlebot4 discovery_server.launch.py
+```
+
+Terminal 2 (Middleware machine)
+```bash
+export ROS_DISCOVERY_SERVER="<ip-address of TB4>:<port>"
+export FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml    #check the remote server prefix, udp address (should be the one, you want to listen to), port in this xml file
+ros2 launch turtlebot4_navigation nav2.launch.py namespace:=robot_0 params_file:=/home/mayooran/Documents/iros/src/DRL-exploration/unity_end/human_robot_pkg/config/nav2_real_world.yaml use_sim_time:=true
+```
+
+Terminal 3 (Middleware machine)
+```bash
+export ROS_DISCOVERY_SERVER="<ip-address of TB4>:<port>"
+export FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml    #check the remote server prefix, udp address (should be the one, you want to listen to), port in this xml file
+# Make sure you do 2D pose estimate before you do this step! otherwise this will throw goal was rejected!
+ros2 action send_goal /robot_0/navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: -0.84, y: -0.28, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}" # Try this just to check whether the navigate to pose is working
+```
+
+
+## Known Errors
+
+1. When you give navigate to pose command for Turtlebot4, you might get the following error.
+
+```bash
+ros2 action send_goal /robot_0/navigate_to_pose nav2_msgs/action/NavigateToPose "pose: {header: {frame_id: map}, pose: {position: {x: -0.84, y: -0.28, z: 0.0}, orientation:{x: 0.0, y: 0.0, z: 0, w: 1.0000000}}}"
+Waiting for an action server to become available...
+Sending goal:
+     pose:
+  header:
+    stamp:
+      sec: 0
+      nanosec: 0
+    frame_id: map
+  pose:
+    position:
+      x: -0.84
+      y: -0.28
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+behavior_tree: ''
+
+Goal was rejected.
+```
+
+First, check whether your nav2 stack is launched properly. 
+
+```bash
+[bt_navigator-5] [ERROR] [1771605764.906961073] [robot_0.bt_navigator]: Exception when loading BT: Action server compute_path_through_poses not available
+[bt_navigator-5] [ERROR] [1771605764.907007294] [robot_0.bt_navigator]: Error loading XML file: /opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_through_poses_w_replanning_and_recovery.xml
+[lifecycle_manager-8] [ERROR] [1771605764.907243894] [robot_0.lifecycle_manager_navigation]: Failed to change state for node: bt_navigator
+[lifecycle_manager-8] [ERROR] [1771605764.907285971] [robot_0.lifecycle_manager_navigation]: Failed to bring up all requested nodes. Aborting bringup.
+```
+The above error messages indicate that the nav2 is not launched properly.
+
+2. Use an easier behavior tree for nav2 if the recovery behaviors give trouble.
+
+example:
+/share/nav2_bt_navigator/behavior_trees/navigate_w_replanning_only_if_goal_is_updated.xml
+
+3. nav2 will may reject the goal when a navigate to pose is given.
+
+```bash
+[bt_navigator-5] [WARN] [1771354216.964211362] [robot_0.bt_navigator.rclcpp_action]: Failed to send goal response 2884ae599bd24b70a1dcfd877ea9d5d4 (timeout): client will not receive response, at ./src/rmw_response.cpp:154, at ./src/rcl/service.c:314
+```
+
+4. The action client gets timeout out waiting for the action server to respond.
+
+```bash
+[bt_navigator-5] [WARN] [1771455420.015176679] [robot_0.bt_navigator_navigate_to_pose_rclcpp_node]: Timed out while waiting for action server to acknowledge goal request for compute_path_to_pose
+```
+Setting the flag use_sim_time=true with navigation thread would fix this. 
+But worked instance would look like this [warp instance](https://app.warp.dev/block/L67SiwinRyJJ6LDhtosR4Z)
+
+5.
+
+```bash
+[bt_navigator-5] [ERROR] [1772117416.149270458] [robot_0.bt_navigator_navigate_through_poses_rclcpp_node]: "compute_path_through_poses" action server not available after waiting for 1.00s
+[bt_navigator-5] [ERROR] [1772117416.180793887] [robot_0.bt_navigator]: Exception when loading BT: Action server compute_path_through_poses not available
+[bt_navigator-5] [ERROR] [1772117416.180857119] [robot_0.bt_navigator]: Error loading XML file: /opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_through_poses_w_replanning_and_recovery.xml
+[lifecycle_manager-8] [ERROR] [1772117416.181165815] [robot_0.lifecycle_manager_navigation]: Failed to change state for node: bt_navigator
+[lifecycle_manager-8] [ERROR] [1772117416.181214508] [robot_0.lifecycle_manager_navigation]: Failed to bring up all requested nodes. Aborting bringup.
+```
+
+If any of these happens, the nav2 stack is not properly intitated. Try restarting the TB.
+```bash
+sudo reboot now
+```
+
+6. 
+
+```bash
+[controller_server-1] [WARN] [1733850699.044709052] [sheldon.controller_server.rclcpp]: failed to send response to /sheldon/controller_server/change_state (timeout): client will not receive response, at ./src/rmw_response.cpp:154, at ./src/rcl/service.c:314
+```
+

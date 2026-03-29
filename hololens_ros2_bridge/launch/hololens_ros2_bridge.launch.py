@@ -49,6 +49,13 @@ def generate_launch_description():
         output='screen'
     )
 
+    depth_camerainfo_parser_node = Node(
+        package='hololens_ros2_bridge',
+        executable='depth_camerainfo_parser',
+        name='depth_camerainfo_parser',
+        output='screen'
+    )
+
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
@@ -132,6 +139,7 @@ def generate_launch_description():
         # pv_publisher_node,
         # sm_publisher_node,
         # depth_publisher_node,
+        # depth_camerainfo_parser_node,
 
         # depth_image_to_laserscan_node,
         # pointcloud_publisher_node,

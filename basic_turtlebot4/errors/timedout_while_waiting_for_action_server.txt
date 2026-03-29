@@ -1,0 +1,71 @@
+[bt_navigator-5] [INFO] [1771455419.711303034] [robot_0.bt_navigator]: Begin navigating from current location (-0.05, -0.02) to (-0.84, -1.28)
+[bt_navigator-5] [WARN] [1771455420.015089879] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771455420.015176679] [robot_0.bt_navigator_navigate_to_pose_rclcpp_node]: Timed out while waiting for action server to acknowledge goal request for compute_path_to_pose
+[bt_navigator-5] [WARN] [1771455420.025638193] [robot_0.bt_navigator]: [navigate_to_pose] [ActionServer] Aborting handle.
+[bt_navigator-5] [ERROR] [1771455420.227217998] [robot_0.bt_navigator]: Goal failed
+
+
+changing bt_navigator:default_server_timeout to 20,100,500 didnt work.
+
+when it si set to 500, this happens
+
+[bt_navigator-5] [INFO] [1771456660.807602023] [robot_0.bt_navigator]: Begin navigating from current location (-0.05, -0.02) to (-0.84, 1.28)
+[bt_navigator-5] [WARN] [1771456660.889409931] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456660.925953401] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [INFO] [1771456661.039513768] [robot_0.controller_server]: Received a goal, begin computing control effort.
+[controller_server-1] [WARN] [1771456661.039615520] [robot_0.controller_server]: No goal checker was specified in parameter 'current_goal_checker'. Server will use only plugin loaded general_goal_checker . This warning will appear once.
+[bt_navigator-5] [WARN] [1771456661.054439040] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456661.068649602] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456661.136769448] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456661.225583423] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456661.402776926] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456661.453666950] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456661.629753078] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456661.668200866] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456661.843486338] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456661.875355673] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456661.981848519] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456661.996160480] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456662.135676045] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456662.147930714] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456662.201050932] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456662.397224198] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456662.421705288] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456662.584459332] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456662.665903477] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456662.741411289] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456662.819025237] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456662.856900868] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456662.987183453] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456663.064027309] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[bt_navigator-5] [WARN] [1771456663.179863116] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456663.209617754] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[controller_server-1] [ERROR] [1771456663.214211781] [tf_help]: Transform data too old when converting from odom to map
+[controller_server-1] [ERROR] [1771456663.214246625] [tf_help]: Data time: 1771456663s 164079752ns, Transform time: 1771456662s 289584363ns
+[controller_server-1] [WARN] [1771456663.214317384] [robot_0.controller_server]: Unable to transform robot pose into global plan's frame
+[controller_server-1] [ERROR] [1771456663.264245876] [tf_help]: Transform data too old when converting from odom to map
+[controller_server-1] [ERROR] [1771456663.264287318] [tf_help]: Data time: 1771456663s 164079752ns, Transform time: 1771456662s 289584363ns
+[controller_server-1] [WARN] [1771456663.264331941] [robot_0.controller_server]: Unable to transform robot pose into global plan's frame
+[bt_navigator-5] [WARN] [1771456663.284587080] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456663.329938768] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[controller_server-1] [ERROR] [1771456663.330072090] [tf_help]: Transform data too old when converting from odom to map
+[controller_server-1] [ERROR] [1771456663.330080805] [tf_help]: Data time: 1771456663s 164079752ns, Transform time: 1771456662s 289584363ns
+[controller_server-1] [WARN] [1771456663.330114560] [robot_0.controller_server]: Unable to transform robot pose into global plan's frame
+[controller_server-1] [ERROR] [1771456663.364171274] [tf_help]: Transform data too old when converting from odom to map
+[controller_server-1] [ERROR] [1771456663.364190634] [tf_help]: Data time: 1771456663s 164079752ns, Transform time: 1771456662s 289584363ns
+[controller_server-1] [WARN] [1771456663.364218099] [robot_0.controller_server]: Unable to transform robot pose into global plan's frame
+[bt_navigator-5] [WARN] [1771456663.420561773] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456663.508831637] [robot_0.controller_server]: Control loop missed its desired rate of 20.0000Hz
+[controller_server-1] [ERROR] [1771456663.508999735] [tf_help]: Transform data too old when converting from odom to map
+[controller_server-1] [ERROR] [1771456663.509008957] [tf_help]: Data time: 1771456663s 164079752ns, Transform time: 1771456662s 289584363ns
+[controller_server-1] [WARN] [1771456663.509047752] [robot_0.controller_server]: Unable to transform robot pose into global plan's frame
+[controller_server-1] [ERROR] [1771456663.559453880] [tf_help]: Transform data too old when converting from odom to map
+[controller_server-1] [ERROR] [1771456663.559493807] [tf_help]: Data time: 1771456663s 164079752ns, Transform time: 1771456662s 289584363ns
+[controller_server-1] [WARN] [1771456663.559531822] [robot_0.controller_server]: Unable to transform robot pose into global plan's frame
+[controller_server-1] [ERROR] [1771456663.559661118] [robot_0.controller_server]: Controller patience exceeded
+[bt_navigator-5] [WARN] [1771456663.593884237] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[controller_server-1] [WARN] [1771456663.638082037] [robot_0.controller_server]: [follow_path] [ActionServer] Aborting handle.
+[bt_navigator-5] [WARN] [1771456663.676628354] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456663.792041637] [BehaviorTreeEngine]: Behavior Tree tick rate 100.00 was exceeded!
+[bt_navigator-5] [WARN] [1771456663.823468343] [robot_0.bt_navigator]: [navigate_to_pose] [ActionServer] Aborting handle.
+[bt_navigator-5] [ERROR] [1771456663.823615941] [robot_0.bt_navigator]: Goal failed

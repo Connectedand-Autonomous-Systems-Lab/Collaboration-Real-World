@@ -1,3 +1,5 @@
+import json
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
@@ -6,55 +8,111 @@ from sensor_msgs.msg import Image, CameraInfo
 import numpy as np
 from cv_bridge import CvBridge
 from scipy.optimize import least_squares
+from pynput import keyboard
+import cv2
+
+import sys
+sys.path.append('/home/mayooran/Documents/project_hl2ss/codes')
+import hl2ss
+from colorama import Fore, Style
 
 # Replace with actual client
-from tools.hl2ss_bridge import depth_client
 # from tools.sample_integrator_pv import depth_client
 # from tools.sample_simultaneous_ahat_lt import depth_client
+
+def on_press(key):
+    global enable
+    enable = key != keyboard.Key.esc
+
+    return enable
 
 class DepthPublisher(Node):
     def __init__(self):
         super().__init__('depth_publisher')
         self.depth_publisher_ = self.create_publisher(Image, 'hololens/depth', 10)
         self.depth_cameraInfo_publisher_ = self.create_publisher(CameraInfo, 'hololens/depth_cameraInfo', 10)
+        self.dummy_cameraInfo_publisher_ = self.create_publisher(String, 'hololens/depth_cameraInfo_dummy', 10)
         self.counter = 0
         self.bridge = CvBridge()
-        self.client = depth_client()
-        time.sleep(3)  # Allow client to initialize
+        mode = hl2ss.StreamMode.MODE_1
+        png_filter = hl2ss.PngFilterMode.Paeth
+        host = "10.196.109.211"
+
+        global enable
+        enable = True
+        data = hl2ss.download_calibration_rm_depth_longthrow(host,  hl2ss.StreamPort.RM_DEPTH_LONGTHROW)
+        self.camera_info = {
+            "Width": int(data.undistort_map.shape[1]),
+            "Height": int(data.undistort_map.shape[0]),
+            "uv2xy_shape": list(data.uv2xy.shape),
+            "extrinsics": data.extrinsics.tolist(),
+            "scale": float(data.scale),
+            "undistort_map_shape": list(data.undistort_map.shape),
+            "intrinsics": data.intrinsics.tolist(),
+            "undistort_map": data.undistort_map.tolist(),
+        }
+
+        # file = open("/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge/rosbag/hl_depth_calibration_data.json", "w")
+        # json.dump(self.camera_info, file, indent=4)
+        # file.close()
+
+        try:
+            self.client = hl2ss.rx_decoded_rm_depth_longthrow(host, hl2ss.StreamPort.RM_DEPTH_LONGTHROW, hl2ss.ChunkSize.RM_DEPTH_LONGTHROW, mode, png_filter)
+            self.client.open()
+            self.get_logger().info("HL2 Depth client connected successfully.")
+        except Exception as e:
+            print(Fore.RED,f'HL not connected : {e}')
+            return
+
+        listener = keyboard.Listener(on_press=on_press)
+        listener.start()
+
+        self.frame_num = 0
+
+        # time.sleep(3)  # Allow client to initialize
         self.create_timer(0.05, self.publish_depth)
-        self.create_timer(1.0, self.publish_camera_info)
+        # self.create_timer(1.0, self.publish_camera_info)
+        self.create_timer(1.0, self.publish_dummy_camera_info)
+        # self.publish_depth()
+
+    def publish_dummy_camera_info(self):
+        camera_info_dummy = String()
+        camera_info_dummy.data = json.dumps(self.camera_info)
+        # camera_info_dummy.data = "Dummy camera info for depth stream"
+        self.dummy_cameraInfo_publisher_.publish(camera_info_dummy)
 
     def publish_depth(self):
-        # try:
-        msg = Image()
-
-        # depth = self.client.get_depth()[:, :, 0]  
-        depth = self.client.get_depth() 
+        try:
+            data = self.client.get_next_packet()  # for depth
+            # cv2.imshow('Depth', data.payload.depth / np.max(data.payload.depth)) # Normalized for visibility
+            # cv2.waitKey(1)
+            HL_connected = True
         
-        msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = "hololens"
-        
-        # msg.height, msg.width = depth.shape
-        # print(depth.shape)
-        # print(np.unique(depth))
-        msg.height = depth.shape[0]
-        msg.width = depth.shape[1]
-        msg.encoding = "16UC1"  # Assuming depth is in unsigned 16-bit
-        msg.is_bigendian = False
-        msg.step = msg.width * depth.dtype.itemsize
+            self.frame_num += 1
+            # try:
+            msg = Image()
+            depth = data.payload.depth
+            msg.header.stamp = self.get_clock().now().to_msg()
+            msg.header.frame_id = "hololens"
+            msg.height = depth.shape[0]
+            msg.width = depth.shape[1]
+            msg.encoding = "16UC1"  # Assuming depth is in unsigned 16-bit
+            msg.is_bigendian = False
+            msg.step = msg.width * depth.dtype.itemsize
+            # msg.data = self.bridge.cv2_to_imgmsg(depth, encoding="passthrough").data
+            msg.data = depth
 
-        msg.data = self.bridge.cv2_to_imgmsg(depth, encoding="passthrough").data
-        # print(np.unique(msg.data))
-        # msg.data = depth
+            self.depth_publisher_.publish(msg)
+            self.get_logger().debug(f"Published depth frame {self.counter}")
+            self.counter += 1
 
-        self.depth_publisher_.publish(msg)
-        self.get_logger().debug(f"Published depth frame {self.counter}")
-        self.counter += 1
 
-    
-        # except Exception as e:
-        #     self.get_logger().warn(f"Position list publish failed: {e}", throttle_duration_sec=1, once=True)
-    
+        except Exception as e:
+            # print(Fore.RED,'#',end='', flush=True)
+            print(Fore.RED, f'HL not connected: {e}')
+            HL_connected = False
+            pass
+
     def publish_camera_info(self):
         try:
             publish_empty_camera_info = True

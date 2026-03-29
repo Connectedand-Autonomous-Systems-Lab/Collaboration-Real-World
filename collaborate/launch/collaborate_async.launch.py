@@ -9,6 +9,12 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 import os
 
+def find_rosbag(parent_dir):
+    folders = os.listdir(parent_dir)
+    for folder in folders:
+        if folder.startswith("rosbag2"):
+            return parent_dir + "/" + folder
+
 def generate_launch_description():
     
     hololens_bridge_launch = IncludeLaunchDescription(
@@ -52,12 +58,12 @@ def generate_launch_description():
         ),
         launch_arguments={
             'use_sim_time': 'true',
-            'slam_params_file': os.path.join(get_package_share_directory('hololens_ros2_bridge'), 'config', 'mapper_params_online_async.yaml'),
+            'slam_params_file': os.path.join(get_package_share_directory('hololens_ros2_bridge'), 'config', 'hololens.yaml'),
         }.items()
-    )   
+    ) 
 
     human_bag = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/media/2TB/Collaborative_user_study_real_world/Mayooran/with_identification/rosbag2_2025_12_04-20_33_56'],
+        cmd=['ros2', 'bag', 'play', find_rosbag('/media/2TB/Collaborative_user_study_real_world/Raj/run1')],
         output='screen'
     )
 
@@ -65,12 +71,12 @@ def generate_launch_description():
 
         rviz_node,
         # hololens_bridge_launch,
-        human_bag,
-        slam_toolbox,
+        # human_bag,
+        # slam_toolbox,
         # turtlebot4_launch,
         # map_merge_launch,
-        # GroupAction([
-        #     PushRosNamespace('human/'),
-        #     hololens_bridge_launch
-        # ]),
+        GroupAction([
+            PushRosNamespace('human/'),
+            human_bag
+        ]),
     ])

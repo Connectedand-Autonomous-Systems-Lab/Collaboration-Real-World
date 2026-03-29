@@ -12,7 +12,7 @@ import numpy as np
 import tools.sm_utilities as sm_utilities
 # import cv2
 
-host_address = "192.168.1.10"
+host_address = "10.196.109.211"
 
 # These clients works with new hl2ss repo. Run the new hl2ss app on hololens.
 # These clients publish data without an external UDP server.

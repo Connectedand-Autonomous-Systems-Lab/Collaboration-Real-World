@@ -27,6 +27,8 @@ class TFRelay(Node):
         for transform in msg.transforms:
             # transform.header.frame_id = self.frame_prefix + transform.header.frame_id
             # transform.child_frame_id = self.frame_prefix + transform.child_frame_id
+            if transform.header.frame_id == "odom":
+                transform.header.frame_id = "robot_odom"
             transform.header.frame_id = transform.header.frame_id
             transform.child_frame_id = transform.child_frame_id
         self.publisher.publish(msg)

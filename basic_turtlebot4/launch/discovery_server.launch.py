@@ -21,17 +21,13 @@ from launch.actions import IncludeLaunchDescription, GroupAction
 
 def generate_launch_description():
     slam_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('turtlebot4_navigation'),
-                'launch',
-                'slam.launch.py'
-            ])
-        ]),
-        # launch_arguments={
-        #     'use_sim_time': 'true',
-        #     'slam_params_file': os.path.join(get_package_share_directory('basic_turtlebot4'), 'config', 'tb.yaml'),
-        # }.items()
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+        ),
+        launch_arguments={
+            'use_sim_time': 'true',
+            'slam_params_file': "/home/mayooran/Documents/hololens_ros2_bridge/src/basic_turtlebot4/config/robot_odom.yaml",
+        }.items()
     )
 
     # tf_relay = Node(
@@ -96,6 +92,6 @@ def generate_launch_description():
         rviz2,
         tf_relay,
         # depth_image_to_laserscan_node
-        wavefront_frontier_publisher,
+        # wavefront_frontier_publisher,
         # human_bag,
     ])

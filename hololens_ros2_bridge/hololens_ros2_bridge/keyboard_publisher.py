@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 class KeyboardPublisher(Node):
     def __init__(self):
         super().__init__('keyboard_publisher')
-        self.publisher_ = self.create_publisher(String, 'chatter', 10)
+        self.publisher_ = self.create_publisher(String, 'detections', 10)
         self.get_logger().info("KeyboardPublisher node started. Type messages and press Enter.")
         self.get_logger().info("Type 'quit' or 'exit' to stop.")
 

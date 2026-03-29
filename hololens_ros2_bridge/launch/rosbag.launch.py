@@ -6,6 +6,12 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 import os
 
+def find_rosbag(parent_dir):
+    folders = os.listdir(parent_dir)
+    for folder in folders:
+        if folder.startswith("rosbag2"):
+            return parent_dir + "/" + folder
+
 def generate_launch_description():
     tf_publisher_node = Node(
         package='hololens_ros2_bridge',
@@ -42,16 +48,23 @@ def generate_launch_description():
         output='screen'
     )
 
+    depth_camerainfo_parser_node = Node(
+        package='hololens_ros2_bridge',
+        executable='depth_camerainfo_parser',
+        name='depth_camerainfo_parser',
+        output='screen'
+    )
+
     depth_image_to_laserscan_node = Node(
         package='depthimage_to_laserscan',
         executable='depthimage_to_laserscan_node',
         name='depth_image_to_laserscan',
         remappings=[
             ('depth', 'hololens/depth'),
-            ('depth_camera_info', 'hololens/depth_cameraInfo'),
+            ('depth_camera_info', 'hololens/depth_camerainfo'),
         ],  
         parameters=[{
-            'output_frame': 'odom',
+            'output_frame': 'hololens',
         }],
         )
 
@@ -60,7 +73,7 @@ def generate_launch_description():
         executable='rviz2',
         name='rviz2',
         output='screen',
-        arguments=['-d', 'src/hololens_ros2_bridge/rviz/hololens.rviz', '--ros-args', '--log-level', 'fatal'],
+        arguments=['-d', 'src/hololens_ros2_bridge/rviz/hololens_standalone.rviz', '--ros-args', '--log-level', 'fatal'],
         parameters=[{'use_sim_time': True}]
     )
 
@@ -68,11 +81,10 @@ def generate_launch_description():
     #     cmd=['ros2', 'bag', 'play', '/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge/rosbag/run2', '--topics', '/hololens/si/head_orientation', '/hololens/si/head_position', '/hololens/sm/pcd', '/point_cloud2', '/scan', '/tf', '/tf_static'],
     #     output='screen'
     # )
-
     human_bag = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/media/2TB/Collaborative_user_study_real_world/Mohammed/run5/rosbag2_2025_12_04-19_56_22'],
-        output='screen'
-    )
+            cmd=['ros2', 'bag', 'play', find_rosbag('/media/2TB/Collaborative_user_study_real_world/Mohammed/run1')],
+            output='screen'
+        )
     
     pointcloud_to_laserscan_node = Node(
         package='pointcloud_to_laserscan',
@@ -106,6 +118,7 @@ def generate_launch_description():
         # sm_publisher_node,
         # pointcloud_publisher_node,
         # depth_publisher_node,
+        # depth_camerainfo_parser_node,
         # depth_image_to_laserscan_node,
         rviz_node,
         # pointcloud_to_laserscan_node,

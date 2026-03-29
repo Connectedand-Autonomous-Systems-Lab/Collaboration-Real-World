@@ -1,5 +1,5 @@
 wall_time_s,cpu_percent,mem_percent,mem_used_bytes,mem_available_bytes,power_w,power_source
-1770769837.48056,0,20.8,13888503808,52735815680,2885.087,intel_rapl_energy
+,,,,,,
 1770769838.48159,8.9,21,13997051904,52627267584,259.72,intel_rapl_energy
 1770769839.48133,6.5,20.9,13934804992,52689514496,254.973,intel_rapl_energy
 1770769840.48131,5.9,20.9,13926920192,52697399296,254.101,intel_rapl_energy
@@ -151,3 +151,6 @@ power_max_w,2885.087,,,,,
 ,,,,,,
 ,"This is recorded when TB slam+nav2 and humanbag with head,scan,+slam running",,,,,
 ,"frontier navigator, PV from HL was not running",,,,,
+,,,,,,
+Calculation by Mayooran,,,,,,
+AVG,6.6044776119403,20.960447761194,13961960035.3433,52662359452.6567,255.407126865672,#DIV/0!
