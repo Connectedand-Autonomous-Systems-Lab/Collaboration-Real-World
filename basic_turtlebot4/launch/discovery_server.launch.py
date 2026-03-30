@@ -82,6 +82,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         GroupAction([
+            SetRemap(src='/map', dst='/robot_0/map'),
             PushRosNamespace('robot_0/'),
             slam_launch,
             # nav2

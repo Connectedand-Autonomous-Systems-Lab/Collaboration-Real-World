@@ -67,9 +67,9 @@ def generate_launch_description():
 
     return LaunchDescription({
         human_bag,
-        rviz2,
+        # rviz2,
         # wavefront_frontier_publisher,
-        # slam_toolbox,
+        slam_toolbox,
         # odom_publisher,
     
     })

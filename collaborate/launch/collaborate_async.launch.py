@@ -17,66 +17,55 @@ def find_rosbag(parent_dir):
 
 def generate_launch_description():
     
-    hololens_bridge_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(
-            get_package_share_directory('hololens_ros2_bridge'), 'launch', 'hololens_ros2_bridge.launch.py'
-        ))
-    )
-
-    tf_relay = Node(
-            package='tf_relay',
-            executable='relay',
-            name='tf_relay_tb',
-            arguments=['tb', '1'],  # same as: ros2 run tf_relay relay 'tb' 1
-            output='screen',
-        )
-    
-    turtlebot4_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(
-            get_package_share_directory('basic_turtlebot4'), 'launch', 'slam.launch.py'
-        ))
-    )
-
-    rviz_node = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='screen',
-        arguments=['-d', 'src/collaborate/rviz/collaborate.rviz', '--ros-args', '--log-level', 'fatal'],
-        parameters=[{'use_sim_time': True}]
-    )
-
-    map_merge_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(
-            get_package_share_directory('multirobot_map_merge'), 'launch', 'map_merge.launch.py'
-        ))
-    )
-
-    slam_toolbox = IncludeLaunchDescription(
+    human = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+            os.path.join(get_package_share_directory('collaborate'), 'launch', 'human_only_replay.launch.py')
         ),
-        launch_arguments={
-            'use_sim_time': 'true',
-            'slam_params_file': os.path.join(get_package_share_directory('hololens_ros2_bridge'), 'config', 'hololens.yaml'),
-        }.items()
-    ) 
+    )
 
-    human_bag = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', find_rosbag('/media/2TB/Collaborative_user_study_real_world/Raj/run1')],
+    # turtlebot = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(
+    #         os.path.join(get_package_share_directory('basic_turtlebot4'), 'launch', 'discovery_server.launch.py')
+    #     ),
+    # )
+
+    turtlebot = ExecuteProcess(
+        cmd=['ros2', 'bag', 'play', find_rosbag('src/hololens_ros2_bridge/rosbag/tb_simple_teleop')],
         output='screen'
     )
 
-    return LaunchDescription([
+    merge_map = Node(
+        package='map_merge_testbed',
+        executable='map_merge',
+        name='map_merge',
+        output='screen',
+        parameters=[
+            {
+                'map1_topic': '/robot_0/map',
+                'map2_topic': '/map',
+                'merged_map_topic': '/merged_map',
+                'merged_map_frame': 'merged_map',
+                'publish_period': 1.0,
+                'map1_x_offset': 0.0,
+                'map1_y_offset': 0.0,
+                'map1_rotate_180': True,
+                'map2_x_offset': 0.0,
+                'map2_y_offset': 0.0,
+            }
+        ],
+    )
 
-        rviz_node,
-        # hololens_bridge_launch,
-        # human_bag,
-        # slam_toolbox,
-        # turtlebot4_launch,
-        # map_merge_launch,
-        GroupAction([
-            PushRosNamespace('human/'),
-            human_bag
-        ]),
+    rviz2 = Node(
+        package='rviz2',
+        executable='rviz2',
+        output='screen',
+        arguments=['-d', 'src/hololens_ros2_bridge/rviz/collaborate.rviz', '--ros-args', '--log-level', 'fatal'],
+        parameters=[{'use_sim_time':True}]
+    )
+
+    return LaunchDescription([
+        human,
+        turtlebot,
+        rviz2,
+        merge_map,
     ])

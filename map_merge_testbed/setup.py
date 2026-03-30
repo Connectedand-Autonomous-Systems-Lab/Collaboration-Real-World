@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'occupancy_grid_publisher = map_merge_testbed.occupancy_grid_publisher:main',
+            'map_merge = map_merge_testbed.merge_map:main',
         ],
     },
 )

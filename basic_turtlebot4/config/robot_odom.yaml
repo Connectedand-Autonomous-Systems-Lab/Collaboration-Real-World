@@ -12,7 +12,7 @@ robot_0:
 
       # ROS Parameters
       odom_frame: robot_odom
-      map_frame: map
+      map_frame: robot_map
       base_frame: base_link
       scan_topic: scan
       mode: mapping
