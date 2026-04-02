@@ -34,6 +34,13 @@ def generate_launch_description():
         output='screen'
     )
 
+    rotate_map = Node(
+        package='basic_turtlebot4',
+        executable='rotate_map',
+        name='rotate_map',
+        output='screen',
+    )
+
     merge_map = Node(
         package='map_merge_testbed',
         executable='map_merge',
@@ -68,4 +75,5 @@ def generate_launch_description():
         turtlebot,
         rviz2,
         merge_map,
+        # rotate_map,
     ])

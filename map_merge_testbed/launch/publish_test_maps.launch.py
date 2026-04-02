@@ -104,7 +104,7 @@ def generate_launch_description():
             ),
             DeclareLaunchArgument(
                 'map1_rotate_180',
-                default_value='false',
+                default_value='true',
                 description='Rotate map1 by 180 degrees before merging.',
             ),
             DeclareLaunchArgument(

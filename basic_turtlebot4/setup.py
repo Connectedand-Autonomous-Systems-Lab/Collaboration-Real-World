@@ -26,6 +26,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'rotate_map = basic_turtlebot4.rotate_map_node:main',
         ],
     },
 )

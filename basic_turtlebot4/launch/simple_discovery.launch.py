@@ -20,18 +20,23 @@ from launch.actions import IncludeLaunchDescription, GroupAction
 ################################################################################
 
 def generate_launch_description():
+    # slam_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource([
+    #         PathJoinSubstitution([
+    #             FindPackageShare('turtlebot4_navigation'),
+    #             'launch',
+    #             'slam.launch.py'
+    #         ])
+    #     ]),
+    #     # launch_arguments={
+    #     #     'use_sim_time': 'true',
+    #     #     'slam_params_file': os.path.join(get_package_share_directory('basic_turtlebot4'), 'config', 'tb.yaml'),
+    #     # }.items()
+    # )
     slam_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('turtlebot4_navigation'),
-                'launch',
-                'slam.launch.py'
-            ])
-        ]),
-        # launch_arguments={
-        #     'use_sim_time': 'true',
-        #     'slam_params_file': os.path.join(get_package_share_directory('basic_turtlebot4'), 'config', 'tb.yaml'),
-        # }.items()
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+        )
     )
 
     # tf_relay = Node(
@@ -71,7 +76,7 @@ def generate_launch_description():
         # ]),
 
         slam_launch,
-        nav2,
+        # nav2,
         rviz2,
         # tf_relay
         # depth_image_to_laserscan_node
