@@ -20,23 +20,19 @@ from launch.actions import IncludeLaunchDescription, GroupAction
 ################################################################################
 
 def generate_launch_description():
-    # slam_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource([
-    #         PathJoinSubstitution([
-    #             FindPackageShare('turtlebot4_navigation'),
-    #             'launch',
-    #             'slam.launch.py'
-    #         ])
-    #     ]),
-    #     # launch_arguments={
-    #     #     'use_sim_time': 'true',
-    #     #     'slam_params_file': os.path.join(get_package_share_directory('basic_turtlebot4'), 'config', 'tb.yaml'),
-    #     # }.items()
-    # )
+    
+    turtlebot = ExecuteProcess(
+                        cmd=['ros2', 'bag', 'play', 'src/hololens_ros2_bridge/rosbag/tb_simple_discovery'],
+                        output='screen'
+                    )
+
     slam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
-        )
+        ),
+        launch_arguments={
+            '--remap': '/slam_toolbox:=/slam_toolbox_tb',
+        }.items()
     )
 
     # tf_relay = Node(
@@ -74,10 +70,10 @@ def generate_launch_description():
         #     slam_launch,
         #     nav2
         # ]),
-
+        turtlebot,
         slam_launch,
         # nav2,
-        rviz2,
+        # rviz2,
         # tf_relay
         # depth_image_to_laserscan_node
     ])

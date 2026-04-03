@@ -7,7 +7,9 @@ Panels:
         - /Global Options1
         - /Status1
         - /TF1
+        - /TF1/Frames1
         - /robot1
+        - /robot1/LaserScan1/Topic1
         - /human1
       Splitter Ratio: 0.6334951519966125
     Tree Height: 746
@@ -28,7 +30,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
 Visualization Manager:
   Class: ""
   Displays:
@@ -72,26 +74,149 @@ Visualization Manager:
         Value: /frontiers
       Value: true
     - Class: rviz_default_plugins/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        base_footprint:
+          Value: false
+        base_link:
+          Value: false
+        bump_front_center:
+          Value: false
+        bump_front_left:
+          Value: false
+        bump_front_right:
+          Value: false
+        bump_left:
+          Value: false
+        bump_right:
+          Value: false
+        bumper:
+          Value: false
+        button_1:
+          Value: false
+        button_2:
+          Value: false
+        button_power:
+          Value: false
+        cliff_front_left:
+          Value: false
+        cliff_front_right:
+          Value: false
+        cliff_side_left:
+          Value: false
+        cliff_side_right:
+          Value: false
+        front_caster_link:
+          Value: false
+        front_left_bottom_weight_block:
+          Value: false
+        front_left_top_weight_block:
+          Value: false
+        front_left_tower_standoff:
+          Value: false
+        front_right_bottom_weight_block:
+          Value: false
+        front_right_top_weight_block:
+          Value: false
+        front_right_tower_standoff:
+          Value: false
+        hololens:
+          Value: false
+        human_map:
+          Value: true
+        human_odom:
+          Value: true
+        imu:
+          Value: false
+        imu_link:
+          Value: false
+        ir_intensity_front_center_left:
+          Value: false
+        ir_intensity_front_center_right:
+          Value: false
+        ir_intensity_front_left:
+          Value: false
+        ir_intensity_front_right:
+          Value: false
+        ir_intensity_left:
+          Value: false
+        ir_intensity_right:
+          Value: false
+        ir_intensity_side_left:
+          Value: false
+        ir_omni:
+          Value: false
+        left_wheel:
+          Value: false
+        map:
+          Value: true
+        merged_map:
+          Value: true
+        mouse:
+          Value: false
+        oakd_camera_bracket:
+          Value: false
+        oakd_frame:
+          Value: false
+        oakd_imu_frame:
+          Value: false
+        oakd_left_camera_frame:
+          Value: false
+        oakd_left_camera_optical_frame:
+          Value: false
+        oakd_link:
+          Value: false
+        oakd_rgb_camera_frame:
+          Value: false
+        oakd_rgb_camera_optical_frame:
+          Value: false
+        oakd_right_camera_frame:
+          Value: false
+        oakd_right_camera_optical_frame:
+          Value: false
+        odom:
+          Value: false
+        rear_left_tower_standoff:
+          Value: false
+        rear_right_tower_standoff:
+          Value: false
+        right_wheel:
+          Value: false
+        rplidar_link:
+          Value: false
+        shell_link:
+          Value: false
+        tower_sensor_plate:
+          Value: false
+        wheel_drop_left:
+          Value: false
+        wheel_drop_right:
+          Value: false
       Marker Scale: 10
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        merged_map:
+          human_map:
+            human_odom:
+              hololens:
+                oakd_frame:
+                  {}
+          map:
+            {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Class: rviz_common/Group
       Displays:
         - Alpha: 0.699999988079071
           Class: rviz_default_plugins/Map
           Color Scheme: map
           Draw Behind: false
-          Enabled: true
+          Enabled: false
           Name: Map
           Topic:
             Depth: 5
@@ -99,15 +224,15 @@ Visualization Manager:
             Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /robot_0/map
+            Value: /map
           Update Topic:
             Depth: 5
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /robot_0/map_updates
+            Value: /map_updates
           Use Timestamp: false
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -138,7 +263,7 @@ Visualization Manager:
             Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /robot_0/scan
+            Value: /scan
           Use Fixed Frame: true
           Use rainbow: true
           Value: true
@@ -191,7 +316,7 @@ Visualization Manager:
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /robot_0/robot_description
+            Value: /robot_description
           Enabled: true
           Links:
             All Links Enabled: true
@@ -507,13 +632,13 @@ Visualization Manager:
             Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /map
+            Value: /human/map
           Update Topic:
             Depth: 5
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /map_updates
+            Value: /human/map_updates
           Use Timestamp: false
           Value: false
         - Alpha: 1
@@ -546,7 +671,7 @@ Visualization Manager:
             Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /scan
+            Value: /human/scan
           Use Fixed Frame: true
           Use rainbow: true
           Value: true
@@ -597,7 +722,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: merged_map
+    Fixed Frame: human_map
     Frame Rate: 30
   Name: root
   Tools:
@@ -640,25 +765,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 75.49722290039062
+      Distance: 151.50057983398438
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 5.6930437088012695
-        Y: 2.864713430404663
-        Z: -0.7687050700187683
+        X: 0.6456739902496338
+        Y: 0.963977038860321
+        Z: -0.7636471390724182
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 0.7097971439361572
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.005408156663179398
+      Yaw: 6.2685933113098145
     Saved: ~
 Window Geometry:
   Displays:

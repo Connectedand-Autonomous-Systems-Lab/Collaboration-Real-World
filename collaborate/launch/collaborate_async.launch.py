@@ -23,16 +23,16 @@ def generate_launch_description():
         ),
     )
 
-    # turtlebot = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(
-    #         os.path.join(get_package_share_directory('basic_turtlebot4'), 'launch', 'discovery_server.launch.py')
-    #     ),
-    # )
-
-    turtlebot = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', find_rosbag('src/hololens_ros2_bridge/rosbag/tb_simple_teleop')],
-        output='screen'
+    turtlebot = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('basic_turtlebot4'), 'launch', 'simple_discovery.launch.py')
+        ),
     )
+
+    # turtlebot = ExecuteProcess(
+    #     cmd=['ros2', 'bag', 'play', find_rosbag('src/hololens_ros2_bridge/rosbag/tb_simple_discovery')],
+    #     output='screen'
+    # )
 
     rotate_map = Node(
         package='basic_turtlebot4',
@@ -48,8 +48,8 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {
-                'map1_topic': '/robot_0/map',
-                'map2_topic': '/map',
+                'map1_topic': '/map',
+                'map2_topic': '/human/map',
                 'merged_map_topic': '/merged_map',
                 'merged_map_frame': 'merged_map',
                 'publish_period': 1.0,

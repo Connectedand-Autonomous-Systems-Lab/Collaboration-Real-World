@@ -27,6 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             'rotate_map = basic_turtlebot4.rotate_map_node:main',
+            'tf_rewrite = basic_turtlebot4.tf_rewrite:main',
         ],
     },
 )

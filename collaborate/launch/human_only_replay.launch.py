@@ -14,12 +14,18 @@ def find_rosbag(parent_dir):
 
 def generate_launch_description():
     package_name = 'human_robot_pkg'
-    package_dir = get_package_share_directory(package_name)
-    bringup_dir = get_package_share_directory('nav2_bringup')
+    hololens_ros2_bridge_dir = '/home/mayooran/Documents/hololens_ros2_bridge/src/hololens_ros2_bridge'
     
     human_bag = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', find_rosbag('/media/2TB/Collaborative_user_study_real_world/Raj/run1')],
+        cmd=['ros2', 'bag', 'play', find_rosbag('/media/2TB/Collaborative_user_study_real_world/Raj/run1'), '--remap', '/tf:=/human/tf', '/scan:=/human/scan'],
         output='screen'
+    )
+
+    tf_rewrite = Node(
+        package='basic_turtlebot4',
+        executable='tf_rewrite',
+        name='tf_rewrite',
+        output='screen',
     )
     
     slam_toolbox = IncludeLaunchDescription(
@@ -27,10 +33,24 @@ def generate_launch_description():
             os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
         ),
         launch_arguments={
-            'use_sim_time': 'true',
+            # '--remap': '__node:=/human/slam_toolbox',
+            # 'use_sim_time': 'true',
             'slam_params_file': os.path.join(get_package_share_directory('hololens_ros2_bridge'), 'config', 'hololens.yaml'),
         }.items()
     )
+
+    print(os.path.join(get_package_share_directory('hololens_ros2_bridge'), 'config', 'hololens.yaml'))
+
+    # slam_toolbox = Node(
+    #     package='slam_toolbox',
+    #     executable='async_slam_toolbox_node',
+    #     name='human_slam_toolbox',
+    #     output='screen',
+    #     parameters=[
+    #         os.path.join(hololens_ros2_bridge_dir, 'config', 'hololens.yaml')
+    #     ],
+    # )
+    
 
     # slam_toolbox_human = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
@@ -66,10 +86,15 @@ def generate_launch_description():
     )
 
     return LaunchDescription({
+        GroupAction([
+            PushRosNamespace('human'),
+            slam_toolbox,
+        ]),
         human_bag,
+        tf_rewrite,
         # rviz2,
         # wavefront_frontier_publisher,
-        slam_toolbox,
+        # slam_toolbox,
         # odom_publisher,
     
     })
