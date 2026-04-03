@@ -62,6 +62,24 @@ def generate_launch_description():
         ],
     )
 
+    robot_static_tf_broadcaster = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=[
+                '--x', '0', '--y', '0', '--z', '0',
+                '--yaw', '2.5', '--pitch', '0', '--roll', '0', 
+                '--frame-id', 'merged_map', '--child-frame-id', 'map']
+        )
+    
+    human_static_tf_broadcaster = Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=[
+                '--x', '0', '--y', '0', '--z', '0',
+                '--yaw', '0', '--pitch', '0', '--roll', '0', 
+                '--frame-id', 'merged_map', '--child-frame-id', 'human_map']
+        )
+
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
@@ -75,5 +93,7 @@ def generate_launch_description():
         turtlebot,
         rviz2,
         merge_map,
+        robot_static_tf_broadcaster,
+        human_static_tf_broadcaster,
         # rotate_map,
     ])

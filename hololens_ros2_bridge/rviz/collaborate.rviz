@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /TF1
         - /TF1/Frames1
         - /robot1
         - /robot1/LaserScan1/Topic1
@@ -127,7 +126,7 @@ Visualization Manager:
         human_map:
           Value: true
         human_odom:
-          Value: true
+          Value: false
         imu:
           Value: false
         imu_link:
@@ -207,7 +206,100 @@ Visualization Manager:
                 oakd_frame:
                   {}
           map:
-            {}
+            odom:
+              base_footprint:
+                {}
+              base_link:
+                bump_front_center:
+                  {}
+                bump_front_left:
+                  {}
+                bump_front_right:
+                  {}
+                bump_left:
+                  {}
+                bump_right:
+                  {}
+                bumper:
+                  {}
+                button_1:
+                  {}
+                button_2:
+                  {}
+                button_power:
+                  {}
+                cliff_front_left:
+                  {}
+                cliff_front_right:
+                  {}
+                cliff_side_left:
+                  {}
+                cliff_side_right:
+                  {}
+                front_caster_link:
+                  {}
+                front_left_bottom_weight_block:
+                  {}
+                front_left_top_weight_block:
+                  {}
+                front_right_bottom_weight_block:
+                  {}
+                front_right_top_weight_block:
+                  {}
+                imu:
+                  {}
+                imu_link:
+                  {}
+                ir_intensity_front_center_left:
+                  {}
+                ir_intensity_front_center_right:
+                  {}
+                ir_intensity_front_left:
+                  {}
+                ir_intensity_front_right:
+                  {}
+                ir_intensity_left:
+                  {}
+                ir_intensity_right:
+                  {}
+                ir_intensity_side_left:
+                  {}
+                ir_omni:
+                  {}
+                mouse:
+                  {}
+                shell_link:
+                  front_left_tower_standoff:
+                    {}
+                  front_right_tower_standoff:
+                    {}
+                  oakd_camera_bracket:
+                    oakd_link:
+                      oakd_imu_frame:
+                        {}
+                      oakd_left_camera_frame:
+                        oakd_left_camera_optical_frame:
+                          {}
+                      oakd_rgb_camera_frame:
+                        oakd_rgb_camera_optical_frame:
+                          {}
+                      oakd_right_camera_frame:
+                        oakd_right_camera_optical_frame:
+                          {}
+                  rear_left_tower_standoff:
+                    {}
+                  rear_right_tower_standoff:
+                    {}
+                  rplidar_link:
+                    {}
+                  tower_sensor_plate:
+                    {}
+                wheel_drop_left:
+                  left_wheel:
+                    {}
+                wheel_drop_right:
+                  right_wheel:
+                    {}
       Update Interval: 0
       Value: true
     - Class: rviz_common/Group
@@ -722,7 +814,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: human_map
+    Fixed Frame: merged_map
     Frame Rate: 30
   Name: root
   Tools:
@@ -765,25 +857,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 151.50057983398438
+      Distance: 49.63368606567383
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.6456739902496338
-        Y: 0.963977038860321
-        Z: -0.7636471390724182
+        X: 4.042659759521484
+        Y: 1.6072973012924194
+        Z: -0.7670565843582153
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7097971439361572
+      Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.2685933113098145
+      Yaw: 0.02041007950901985
     Saved: ~
 Window Geometry:
   Displays:
