@@ -23,16 +23,22 @@ def generate_launch_description():
         ),
     )
 
+    jackal = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('collaborate'), 'launch', 'jackal_nav.launch.py')
+        ),
+    )
+
     # turtlebot = IncludeLaunchDescription(
     #     PythonLaunchDescriptionSource(
     #         os.path.join(get_package_share_directory('basic_turtlebot4'), 'launch', 'discovery_server.launch.py')
     #     ),
     # )
 
-    turtlebot = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', find_rosbag('src/hololens_ros2_bridge/rosbag/tb_simple_teleop')],
-        output='screen'
-    )
+    # turtlebot = ExecuteProcess(
+    #     cmd=['ros2', 'bag', 'play', find_rosbag('src/hololens_ros2_bridge/rosbag/tb_simple_teleop')],
+    #     output='screen'
+    # )
 
     rotate_map = Node(
         package='basic_turtlebot4',
@@ -48,7 +54,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {
-                'map1_topic': '/robot_0/map',
+                'map1_topic': '/j100_0953/map',
                 'map2_topic': '/map',
                 'merged_map_topic': '/merged_map',
                 'merged_map_frame': 'merged_map',
@@ -67,13 +73,18 @@ def generate_launch_description():
         executable='rviz2',
         output='screen',
         arguments=['-d', 'src/hololens_ros2_bridge/rviz/collaborate.rviz', '--ros-args', '--log-level', 'fatal'],
-        parameters=[{'use_sim_time':True}]
+        parameters=[{'use_sim_time':True}],
+        remappings=[
+               ('/tf', 'tf'),
+               ('/tf_static', 'tf_static')
+             ]
     )
 
     return LaunchDescription([
         human,
-        turtlebot,
+        # turtlebot,
+        jackal,
         rviz2,
-        merge_map,
+        # merge_map,
         # rotate_map,
     ])

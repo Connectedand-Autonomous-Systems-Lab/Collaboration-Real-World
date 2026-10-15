@@ -5,17 +5,19 @@ from geometry_msgs.msg import TransformStamped
 import numpy as np
 import tf2_ros
 import math
+import array
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 
 class MapMerger(Node):
     def __init__(self):
         super().__init__('map_merger')
         self.get_logger().info('Map_merger started!')
 
-        self.declare_parameter('publish_period', 0.05)
-        self.declare_parameter('map1_topic', '/robot1/map')
-        self.declare_parameter('map2_topic', '/robot2/map')
+        self.declare_parameter('publish_period', 1.0)
+        self.declare_parameter('map1_topic', '/j100_0953/map')
+        self.declare_parameter('map2_topic', '/map')
         self.declare_parameter('merged_map_topic', '/merged_map')
-        self.declare_parameter('merged_map_frame', 'map')
+        self.declare_parameter('merged_map_frame', 'merged_map')
         self.declare_parameter('map1_x_offset', 0.0)
         self.declare_parameter('map1_y_offset', 0.0)
         self.declare_parameter('map1_rotate_180', False)
@@ -41,7 +43,11 @@ class MapMerger(Node):
             self.map2_callback,
             10
         )
-        self.pub_merged_map = self.create_publisher(OccupancyGrid, self.merged_map_topic, 10)
+        # Latched like map_server/slam_toolbox maps: RViz's Map display and late
+        # subscribers default to TRANSIENT_LOCAL and won't match a VOLATILE publisher.
+        map_qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE,
+                             durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.pub_merged_map = self.create_publisher(OccupancyGrid, self.merged_map_topic, map_qos)
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
         self.publish_timer = self.create_timer(self.publish_period, self.try_merge_maps)
         # Store maps
@@ -51,11 +57,11 @@ class MapMerger(Node):
 
     def map1_callback(self, msg):
         self.map1 = msg
-        self.try_merge_maps()
+        self.get_logger().info(f'Received map1 with frame_id: {msg.header.frame_id}', once=True)
 
     def map2_callback(self, msg):
         self.map2 = msg
-        self.try_merge_maps()
+        self.get_logger().info(f'Received map2 with frame_id: {msg.header.frame_id}', once=True)
 
     def mark_corners_with_cross(self, map_data, 
                                 value_bl=1, value_tr=1, 
@@ -217,7 +223,7 @@ class MapMerger(Node):
         merged_msg.info.origin.orientation.y = 0.0
         merged_msg.info.origin.orientation.z = 0.0
         merged_msg.info.origin.orientation.w = 1.0
-        merged_msg.data = merged_data.flatten().tolist()
+        merged_msg.data = array.array('b', merged_data.tobytes())
 
         self.pub_merged_map.publish(merged_msg)
         self.publish_map_transforms()
@@ -317,11 +323,13 @@ class MapMerger(Node):
         merged_msg.info.origin.orientation.y = 0.0
         merged_msg.info.origin.orientation.z = 0.0
         merged_msg.info.origin.orientation.w = 1.0
-        merged_msg.data = merged_data.flatten().tolist()
+        merged_msg.data = array.array('b', merged_data.tobytes())
 
         self.pub_merged_map.publish(merged_msg)
         self.publish_map_transforms()
-        self.get_logger().debug('Published merged map')
+        self.get_logger().info(
+            f'Published merged map ({merged_width}x{merged_height}) on {self.merged_map_topic}',
+            throttle_duration_sec=5.0)
 
     def publish_map_transforms(self):
         for frame_id, placement in self.map_placements.items():

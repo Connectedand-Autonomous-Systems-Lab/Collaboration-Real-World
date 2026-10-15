@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'relay = tf_relay.main:main'
+            'relay = tf_relay.main:main',
+            'jackal_relay = tf_relay.jackal_relay:main',
+            'frame_prefix_relay = tf_relay.frame_prefix_relay:main',
         ],
     },
 )
