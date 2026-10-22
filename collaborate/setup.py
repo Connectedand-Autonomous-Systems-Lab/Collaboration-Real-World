@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'bag_metrics_logger = collaborate.bag_metrics_logger:main',
+            'bag_clock = collaborate.bag_clock:main',
         ],
     },
 )

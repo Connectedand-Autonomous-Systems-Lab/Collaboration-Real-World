@@ -106,6 +106,13 @@ export FASTRTPS_DEFAULT_PROFILES_FILE=super_client_configuration_file.xml    #ch
 ros2 launch depthimage_to_laserscan depthimage_to_laserscan-launch.py
 ```
 
+For any two connected terminal, the following environment variables should be identical. check them by, 
+
+```bash
+printenv | grep -E 'ROS|RMW|FASTRTPS|FASTDDS|CYCLONE|DDS'
+```
+
+
 Then from the middleware machine run the following
 
 Terminal 1 (Middleware machine)

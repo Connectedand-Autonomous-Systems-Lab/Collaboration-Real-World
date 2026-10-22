@@ -13,8 +13,8 @@ def find_rosbag(parent_dir):
             return parent_dir + "/" + folder
 
 def generate_launch_description():
-    package_name = 'human_robot_pkg'
-    package_dir = get_package_share_directory(package_name)
+    # package_name = 'human_robot_pkg'
+    # package_dir = get_package_share_directory(package_name)
     bringup_dir = get_package_share_directory('nav2_bringup')
     
     human_bag = ExecuteProcess(

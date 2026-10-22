@@ -83,7 +83,7 @@ def generate_launch_description():
     return LaunchDescription([
         human,
         # turtlebot,
-        jackal,
+        # jackal,
         rviz2,
         # merge_map,
         # rotate_map,

@@ -22,7 +22,7 @@ class MapMerger(Node):
         self.declare_parameter('map1_y_offset', 0.0)
         self.declare_parameter('map1_rotate_180', False)
         self.declare_parameter('map2_x_offset', 0.0)
-        self.declare_parameter('map2_y_offset', 10.0)
+        self.declare_parameter('map2_y_offset', 50.0)
 
         self.publish_period = self.get_parameter('publish_period').value
         self.map1_topic = self.get_parameter('map1_topic').value
@@ -54,6 +54,7 @@ class MapMerger(Node):
         self.map1 = None
         self.map2 = None
         self.map_placements = {}
+        self.merged_map_counter = 0
 
     def map1_callback(self, msg):
         self.map1 = msg
@@ -330,6 +331,14 @@ class MapMerger(Node):
         self.get_logger().info(
             f'Published merged map ({merged_width}x{merged_height}) on {self.merged_map_topic}',
             throttle_duration_sec=5.0)
+        save_path = f'/home/mayooran/Documents/Concord_realworld/src/collaborate/maps/merged_maps_{self.merged_map_counter}'
+        self.merged_map_counter += 1
+        with open(save_path, 'wb') as f:
+            f.write(b'P5\n')
+            f.write(f'{merged_width} {merged_height}\n'.encode())
+            f.write(b'255\n')
+            f.write(merged_data.tobytes())
+        self.get_logger().info(f'Saved merged map to {save_path}')
 
     def publish_map_transforms(self):
         for frame_id, placement in self.map_placements.items():

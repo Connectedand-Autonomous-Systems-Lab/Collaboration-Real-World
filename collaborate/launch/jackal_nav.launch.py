@@ -56,7 +56,7 @@ def generate_launch_description():
 
     slam_toolbox = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+            os.path.join(get_package_share_directory('collaborate'), 'launch', 'jackal_slam_toolbox.launch.py')
         ),
         launch_arguments={
             'use_sim_time': 'false',
