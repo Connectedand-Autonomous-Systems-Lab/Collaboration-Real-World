@@ -64,6 +64,11 @@ def generate_launch_description():
         }.items()
     )   
 
+    timed_slam = TimerAction(
+        period=3.0,
+        actions=[slam_toolbox],
+    )
+
     static_tf_scan = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
@@ -80,7 +85,7 @@ def generate_launch_description():
         package='rviz2',
         executable='rviz2',
         output='screen',
-        arguments=['-d', 'src/hololens_ros2_bridge/rviz/collaborate.rviz', '--ros-args', '--log-level', 'fatal'],
+        arguments=['-d', 'src/hololens_ros2_bridge/rviz/jackal.rviz', '--ros-args', '--log-level', 'fatal'],
         parameters=[{'use_sim_time': False}]
     )
 
@@ -100,8 +105,8 @@ def generate_launch_description():
         )],
     )
 
-    # return LaunchDescription(args + [rviz2, static_tf_scan, slam_toolbox])
-    return LaunchDescription(args + [rviz2, static_tf_scan, tf_relay, slam_toolbox, nav2])
+    # return LaunchDescription(args + [rviz2, static_tf_scan, tf_relay, timed_slam])
+    return LaunchDescription(args + [rviz2, static_tf_scan, tf_relay, timed_slam, nav2])
     # return LaunchDescription(args + [viz])
     # return LaunchDescription(args + [slam, viz])
     # return LaunchDescription(args + [slam, nav2])
