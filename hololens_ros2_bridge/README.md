@@ -27,7 +27,7 @@ This has following nodes.
 To launch run,
 
 ```python write_max_stream_si.py```
-from [project_hl2ss repository](https://github.com/Connectedand-Autonomous-Systems-Lab/project_hl2ss.git). This publishes the si data over a UDP port
+from [project_hl2ss repository](https://github.com/Connectedand-Autonomous-Systems-Lab/project_hl2ss.git). This publishes the si data over a UDP port. Use the first hl2ss app  that appear in the HL1 device. 
 
 then, 
 ```ros2 launch hololens_ros2_bridge hololens_ros2_bridge.launch.py```

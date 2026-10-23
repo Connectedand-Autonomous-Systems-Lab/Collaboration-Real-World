@@ -34,7 +34,7 @@ def generate_launch_description():
             'scan_topic',
             default_value='/j100_0953/sensors/lidar3d_0/scan'),
         DeclareLaunchArgument(
-            'nav2_delay', default_value='5.0',
+            'nav2_delay', default_value='15.0',
             description='Seconds to wait after SLAM starts before launching Nav2'),
     ]
 
@@ -65,7 +65,7 @@ def generate_launch_description():
     )   
 
     timed_slam = TimerAction(
-        period=3.0,
+        period=8.0,
         actions=[slam_toolbox],
     )
 
